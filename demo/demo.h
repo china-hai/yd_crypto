@@ -26,4 +26,6 @@ void sha1_demo(void);
 void sha224_demo(void);
 void sha256_demo(void);
 
+void sm3_demo(void);
+
 #endif

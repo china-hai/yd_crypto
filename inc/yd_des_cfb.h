@@ -1,5 +1,5 @@
 
-/* 免费，无许可 */
+/* Apache License 2.0 */
 
 /*
 	文件：yd_des_cfb.h
