@@ -2,23 +2,19 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼þ£ºyd_md5.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºMD5Ëã·¨ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶RFC 1321¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_md5.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šMD5ç®—æ³•å®žçŽ°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠRFC 1321ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_md5.h"
 
 
-static uint32_t md5_message_length=0, md5_message_length_tmp=0; //Òª¼ÆËãÏûÏ¢³¤¶È.
+static uint32_t md5_message_length=0, md5_message_length_tmp=0; //è¦è®¡ç®—æ¶ˆæ¯é•¿åº¦.
 static uint32_t t_table[64] =
-{	/* ÏÂÃæÖµÓÉ4294967296*abs(sin(i))µÃµ½£¬i=1~64£¬iÊÇ»¡¶È£¬4294967296=0xffffffff+1 */
+{	/* ä¸‹é¢å€¼ç”±4294967296*abs(sin(i))å¾—åˆ°ï¼Œi=1~64ï¼Œiæ˜¯å¼§åº¦ï¼Œ4294967296=0xffffffff+1 */
 	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
 	0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
 	0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
@@ -30,7 +26,7 @@ static uint32_t t_table[64] =
 };
 
 
-/* Í³¼ÆÏûÏ¢³¤¶È */
+/* ç»Ÿè®¡æ¶ˆæ¯é•¿åº¦ */
 static bool count_hash_message_length(uint8_t *message)
 {
 	uint32_t tmp;
@@ -39,7 +35,7 @@ static bool count_hash_message_length(uint8_t *message)
 	while(message[tmp] != '\0')
 	{
 		tmp++;
-		/* ÏÞÖÆ£º×î´ó¼ÆËã(0xffffffff >> 3) = 536870911×Ö½Ú */
+		/* é™åˆ¶ï¼šæœ€å¤§è®¡ç®—(0xffffffff >> 3) = 536870911å­—èŠ‚ */
 		if(tmp > 536870911)
 		{
 			return false;
@@ -47,15 +43,15 @@ static bool count_hash_message_length(uint8_t *message)
 	}
 	
 	md5_message_length = tmp;
-	md5_message_length_tmp = tmp; //ÏûÏ¢³¤¶È.
+	md5_message_length_tmp = tmp; //æ¶ˆæ¯é•¿åº¦.
 	
 	return true;
 }
 
 /*
-	Êý¾ÝÌî³ä
-	false=Êý¾ÝÃ»ÓÐÌî³äÍê£»true=Êý¾ÝÌî³äÍê³É
-*/
+ *	æ•°æ®å¡«å……
+ *	false=æ•°æ®æ²¡æœ‰å¡«å……å®Œï¼›true=æ•°æ®å¡«å……å®Œæˆ
+ */
 static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 {
 	uint8_t i;
@@ -70,9 +66,9 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 		
 		md5_message_length -= 64;
 	}
-	else //Ð¡ÓÚ64×Ö½Ú.
+	else //å°äºŽ64å­—èŠ‚.
 	{
-		if(md5_message_length >= 56) //56-63×Ö½ÚÖ®¼ä£¬Ò»¸ö¿éÌî³ä²»Íê£¬»¹ÐèÒªÌî³ä1´Î.
+		if(md5_message_length >= 56) //56-63å­—èŠ‚ä¹‹é—´ï¼Œä¸€ä¸ªå—å¡«å……ä¸å®Œï¼Œè¿˜éœ€è¦å¡«å……1æ¬¡.
 		{
 			for(i=0; i<md5_message_length; i++)
 			{
@@ -86,14 +82,14 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 			
 			md5_message_length = 0;
 		}
-		else //Ð¡ÓÚµÈÓÚ56×Ö½Ú.
+		else //å°äºŽç­‰äºŽ56å­—èŠ‚.
 		{
 			for(i=0; i<md5_message_length; i++)
 			{
 				m_8bit[i] = message[i];
 			}
 			
-			/* ÏûÏ¢Ð¡ÓÚ56×Ö½ÚÊ±»òÕßÏûÏ¢ÊÇ64µÄ±¶ÊýÊ±£¬¡®1¡¯Ã»ÓÐÌî³ä */
+			/* æ¶ˆæ¯å°äºŽ56å­—èŠ‚æ—¶æˆ–è€…æ¶ˆæ¯æ˜¯64çš„å€æ•°æ—¶ï¼Œâ€˜1â€™æ²¡æœ‰å¡«å…… */
 			if(md5_message_length != 0 || md5_message_length_tmp % 64 == 0)
 			{
 				m_8bit[i++] = 0x80;
@@ -111,7 +107,7 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 			m_8bit[59] = tmp >> 24;
 			
 			i = 60;
-			while(i < 64) //×î´ó¼ÆËãÊý¾Ý³¤¶ÈÏÞÖÆµ½32Î»£¬ËùÒÔÕâ4×Ö½ÚÌî0.
+			while(i < 64) //æœ€å¤§è®¡ç®—æ•°æ®é•¿åº¦é™åˆ¶åˆ°32ä½ï¼Œæ‰€ä»¥è¿™4å­—èŠ‚å¡«0.
 			{
 				m_8bit[i++] = 0;
 			}
@@ -156,7 +152,7 @@ static void compute_func(uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d,
 	tmp += a_tmp + X + T;
 	tmp1 = tmp >> (32 - S);
 	tmp2 = tmp << S;
-	tmp = tmp1 | tmp2; //Ñ­»·×óÒÆSÎ».
+	tmp = tmp1 | tmp2; //å¾ªçŽ¯å·¦ç§»Sä½.
 	
 	a_tmp = b_tmp + tmp;
 	
@@ -166,7 +162,7 @@ static void compute_func(uint32_t *a, uint32_t *b, uint32_t *c, uint32_t *d,
 	*d = d_tmp;
 }
 
-/* ¼ÆËãÖµ */
+/* è®¡ç®—å€¼ */
 static void compute_md5_value(uint32_t *X, uint32_t *abcd)
 {
 	uint32_t a, b, c, d;
@@ -176,7 +172,7 @@ static void compute_md5_value(uint32_t *X, uint32_t *abcd)
 	c = abcd[2];
 	d = abcd[3];
 	
-	/* Round 1, a=b+((a+F(b,c,d)+X[k]+T[i])Ñ­»·×óÒÆSÎ») */
+	/* Round 1, a=b+((a+F(b,c,d)+X[k]+T[i])å¾ªçŽ¯å·¦ç§»Sä½) */
 	compute_func(&a, &b, &c, &d, X[0], t_table[0], 7, 'F');
 	compute_func(&d, &a, &b, &c, X[1], t_table[1], 12, 'F');
 	compute_func(&c, &d, &a, &b, X[2], t_table[2], 17, 'F');
@@ -194,7 +190,7 @@ static void compute_md5_value(uint32_t *X, uint32_t *abcd)
 	compute_func(&c, &d, &a, &b, X[14], t_table[14], 17, 'F');
 	compute_func(&b, &c, &d, &a, X[15], t_table[15], 22, 'F');
 	
-	/* Round 2, a=b+((a+G(b,c,d)+X[k]+T[i])Ñ­»·×óÒÆSÎ») */
+	/* Round 2, a=b+((a+G(b,c,d)+X[k]+T[i])å¾ªçŽ¯å·¦ç§»Sä½) */
 	compute_func(&a, &b, &c, &d, X[1], t_table[16], 5, 'G');
 	compute_func(&d, &a, &b, &c, X[6], t_table[17], 9, 'G');
 	compute_func(&c, &d, &a, &b, X[11], t_table[18], 14, 'G');
@@ -212,7 +208,7 @@ static void compute_md5_value(uint32_t *X, uint32_t *abcd)
 	compute_func(&c, &d, &a, &b, X[7], t_table[30], 14, 'G');
 	compute_func(&b, &c, &d, &a, X[12], t_table[31], 20, 'G');
 	
-	/* Round 3, a=b+((a+H(b,c,d)+X[k]+T[i])Ñ­»·×óÒÆSÎ») */
+	/* Round 3, a=b+((a+H(b,c,d)+X[k]+T[i])å¾ªçŽ¯å·¦ç§»Sä½) */
 	compute_func(&a, &b, &c, &d, X[5], t_table[32], 4, 'H');
 	compute_func(&d, &a, &b, &c, X[8], t_table[33], 11, 'H');
 	compute_func(&c, &d, &a, &b, X[11], t_table[34], 16, 'H');
@@ -230,7 +226,7 @@ static void compute_md5_value(uint32_t *X, uint32_t *abcd)
 	compute_func(&c, &d, &a, &b, X[15], t_table[46], 16, 'H');
 	compute_func(&b, &c, &d, &a, X[2], t_table[47], 23, 'H');
 	
-	/* Round 4, a=b+((a+I(b,c,d)+X[k]+T[i])Ñ­»·×óÒÆSÎ») */
+	/* Round 4, a=b+((a+I(b,c,d)+X[k]+T[i])å¾ªçŽ¯å·¦ç§»Sä½) */
 	compute_func(&a, &b, &c, &d, X[0], t_table[48], 6, 'I');
 	compute_func(&d, &a, &b, &c, X[7], t_table[49], 10, 'I');
 	compute_func(&c, &d, &a, &b, X[14], t_table[50], 15, 'I');
@@ -255,21 +251,21 @@ static void compute_md5_value(uint32_t *X, uint32_t *abcd)
 }
 
 /*
-	²úÉúMD5
-	message£º²ÎÓë¼ÆËãµÄÊý¾Ý(×Ö·û´®)
-	md5£º	 ¼ÆËãµÃµ½µÄÖµ(128Î»)
-*/
+ *	äº§ç”ŸMD5
+ *	messageï¼šå‚ä¸Žè®¡ç®—çš„æ•°æ®(å­—ç¬¦ä¸²)
+ *	md5ï¼š	 è®¡ç®—å¾—åˆ°çš„å€¼(128ä½)
+ */
 bool yd_md5(uint8_t *message, uint8_t *md5)
 {
 	uint8_t k, k_tmp, flag, m_8bit[64];
 	uint32_t i, X[16], abcd[4];
 	
-	if(false == count_hash_message_length(message)) //×Ö·û´®³¤¶ÈÍ³¼Æ.
+	if(false == count_hash_message_length(message)) //å­—ç¬¦ä¸²é•¿åº¦ç»Ÿè®¡.
 	{
 		return false;
 	}
 	
-	abcd[0] = 0x67452301; //³õÊ¼»¯MD»º³åÆ÷.
+	abcd[0] = 0x67452301; //åˆå§‹åŒ–MDç¼“å†²å™¨.
 	abcd[1] = 0xefcdab89;
 	abcd[2] = 0x98badcfe;
 	abcd[3] = 0x10325476;
@@ -277,10 +273,10 @@ bool yd_md5(uint8_t *message, uint8_t *md5)
 	flag = 1;
 	while(flag == 1)
 	{
-		i = md5_message_length_tmp - md5_message_length; //¶¨Î»Òª¼ÆËãµÄÏûÏ¢.
+		i = md5_message_length_tmp - md5_message_length; //å®šä½è¦è®¡ç®—çš„æ¶ˆæ¯.
 		if(true == padding_bits(&message[i], m_8bit))
 		{
-			flag = 0; //Íê³É×îºóÌî³ä£¬½áÊøÑ­»·.
+			flag = 0; //å®Œæˆæœ€åŽå¡«å……ï¼Œç»“æŸå¾ªçŽ¯.
 		}
 		
 		for(k=0; k<16; k++)
@@ -292,7 +288,7 @@ bool yd_md5(uint8_t *message, uint8_t *md5)
 		compute_md5_value(X, abcd);
 	}
 	
-	/* ÏÔÊ¾×ª»» */
+	/* æ˜¾ç¤ºè½¬æ¢ */
 	md5[0] = abcd[0];
 	md5[1] = abcd[0] >> 8;
 	md5[2] = abcd[0] >> 16;

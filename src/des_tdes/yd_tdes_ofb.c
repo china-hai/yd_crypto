@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_tdes_ofb.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºTDESËã·¨Ä£Ê½OFB(Output Feedback)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶ANSI X9.52-1998¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_tdes_ofb.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šTDESç®—æ³•æ¨¡å¼OFB(Output Feedback)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠANSI X9.52-1998ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_tdes_ofb.h"
@@ -18,15 +14,15 @@
 
 
 /*
-	TOFBÎ»Ä£Ê½£¬¼Ó(½â)ÃÜ(×¢£º°´¿é¼Ó(½â)ÃÜ£¬8×Ö½ÚµÄ±¶Êı)
-	in£º ´ı¼Ó(½â)ÃÜÊı¾İ
-	out£º½â(¼Ó)ÃÜºóÊı¾İ
-	key1£º8×Ö½ÚÃÜÔ¿(×¢£ºÖ»ÓĞÈı¸öÃÜÂë²»Í¬Ê±£¬²ÅÊÇÈıÖØDES)
-	key2£º8×Ö½ÚÃÜÔ¿
-	key3£º8×Ö½ÚÃÜÔ¿
-	iv£º 8×Ö½Ú³õÊ¼Ê¸Á¿
-	blk£ºÒª¼Ó(½â)ÃÜµÄ¿éÊı
-*/
+ *	TOFBä½æ¨¡å¼ï¼ŒåŠ (è§£)å¯†(æ³¨ï¼šæŒ‰å—åŠ (è§£)å¯†ï¼Œ8å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…åŠ (è§£)å¯†æ•°æ®
+ *	outï¼šè§£(åŠ )å¯†åæ•°æ®
+ *	key1ï¼š8å­—èŠ‚å¯†é’¥(æ³¨ï¼šåªæœ‰ä¸‰ä¸ªå¯†ç ä¸åŒæ—¶ï¼Œæ‰æ˜¯ä¸‰é‡DES)
+ *	key2ï¼š8å­—èŠ‚å¯†é’¥
+ *	key3ï¼š8å­—èŠ‚å¯†é’¥
+ *	ivï¼š 8å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	blkï¼šè¦åŠ (è§£)å¯†çš„å—æ•°
+ */
 void yd_tdes_ofb_enc_dec_crypto(uint8_t *in,
 								uint8_t *out,
 								uint8_t *key1,
@@ -46,10 +42,10 @@ void yd_tdes_ofb_enc_dec_crypto(uint8_t *in,
 	{
 		yd_des_crypto(iv_tmp, key1, DES_ENCRYPT);
 		yd_des_crypto(iv_tmp, key2, DES_DECRYPT);
-		yd_des_crypto(iv_tmp, key3, DES_ENCRYPT); //¼ÓÃÜºó£¬ÔÙ×÷ÎªÏÂ´ÎÊäÈë.
+		yd_des_crypto(iv_tmp, key3, DES_ENCRYPT); //åŠ å¯†åï¼Œå†ä½œä¸ºä¸‹æ¬¡è¾“å…¥.
 		for(i=0; i<8; i++)
 		{
-			out[i] = iv_tmp[i] ^ in[i]; //Òì»òºó£¬×÷Îª¼ÓÃÜÊä³ö.
+			out[i] = iv_tmp[i] ^ in[i]; //å¼‚æˆ–åï¼Œä½œä¸ºåŠ å¯†è¾“å‡º.
 		}
 		
 		in += 8;

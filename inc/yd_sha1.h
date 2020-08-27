@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	�ļ���yd_sha1.h
-	���ߣ�wzh
-	���䣺wangzhihai_138@163.com
-	��飺SHA1�㷨ʵ�֣�����ο���FIPS PUB 180-4��
-	�汾��V1.0.01
-*/
-
-/*
-	2020-4-11����һ�η���.
+	文件：yd_sha1.h
+	作者：wzh
+	邮箱：wangzhihai_138@163.com
+	简介：SHA1算法实现，详情参考《FIPS PUB 180-4》
+	版本：README.md定义
 */
 
 #ifndef YD_SHA1_H

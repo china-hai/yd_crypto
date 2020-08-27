@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_des_cbc.h
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºDESËã·¨Ä£Ê½CBC(Cipher Block Chaining)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶FIPS PUB 81¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_des_cbc.h
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šDESç®—æ³•æ¨¡å¼CBC(Cipher Block Chaining)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠFIPS PUB 81ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #ifndef YD_DES_CBC_H

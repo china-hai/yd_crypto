@@ -6,7 +6,7 @@
 #include "yd_des_ofb.h"
 
 
-/* ECB、CBC模式 */
+/* ECB銆丆BC妯″紡 */
 void des_ecb_cbc_demo(void)
 {
 	uint8_t iv[8]={0x12, 0x34, 0x56, 0x78, 0x90, 0xab, 0xcd, 0xef};
@@ -21,7 +21,7 @@ void des_ecb_cbc_demo(void)
 	yd_des_cbc_decrypt(enc, dec, key, iv, 3);
 }
 
-/* CFB模式 */
+/* CFB妯″紡 */
 void des_cfb_demo(void)
 {
 	uint8_t iv[8]={0x12, 0x34, 0x56, 0x78, 0x90, 0xab, 0xcd, 0xef};
@@ -38,7 +38,7 @@ void des_cfb_demo(void)
 	yd_des_cfb64_decrypt(enc64, dec64, key, iv, 3);
 }
 
-/* OFB模式 */
+/* OFB妯″紡 */
 void des_ofb_demo(void)
 {
 	uint8_t iv[8]={0x12, 0x34, 0x56, 0x78, 0x90, 0xab, 0xcd, 0xef};
@@ -48,9 +48,9 @@ void des_ofb_demo(void)
 	uint8_t str64[]="Now is the time for all ";
 	uint8_t dec64[24], enc64[24];
 	
-	yd_des_ofb8_enc_dec_crypto(str8, enc8, key, iv, 10); //加密.
-	yd_des_ofb8_enc_dec_crypto(enc8, dec8, key, iv, 10); //解密.
+	yd_des_ofb8_enc_dec_crypto(str8, enc8, key, iv, 10); //鍔犲瘑.
+	yd_des_ofb8_enc_dec_crypto(enc8, dec8, key, iv, 10); //瑙ｅ瘑.
 	
-	yd_des_ofb64_enc_dec_crypto(str64, enc64, key, iv, 3); //加密.
-	yd_des_ofb64_enc_dec_crypto(enc64, dec64, key, iv, 3); //解密.
+	yd_des_ofb64_enc_dec_crypto(str64, enc64, key, iv, 3); //鍔犲瘑.
+	yd_des_ofb64_enc_dec_crypto(enc64, dec64, key, iv, 3); //瑙ｅ瘑.
 }

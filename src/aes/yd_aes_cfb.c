@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_aes_cfb.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºAESËã·¨Ä£Ê½CFB(Cipher Feedback)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶SP800-38A¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_aes_cfb.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šAESç®—æ³•æ¨¡å¼CFB(Cipher Feedback)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠSP800-38Aã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_aes_cfb.h"
@@ -18,13 +14,13 @@
 
 
 /*
-	CFB-8Î»Ä£Ê½£¬¼ÓÃÜ(×¢£º°´×Ö½Ú¼ÓÃÜ£¬²»ÓÃÊÇ8×Ö½ÚµÄ±¶Êı)
-	in£º ´ı¼ÓÃÜÊı¾İ
-	out£º¼ÓÃÜºóÊı¾İ
-	key£ºÃÜÔ¿(4*AES_NK×Ö½Ú)
-	iv£º 16×Ö½Ú³õÊ¼Ê¸Á¿
-	num£ºÒª¼ÓÃÜµÄ×Ö½ÚÊı
-*/
+ *	CFB-8ä½æ¨¡å¼ï¼ŒåŠ å¯†(æ³¨ï¼šæŒ‰å­—èŠ‚åŠ å¯†ï¼Œä¸ç”¨æ˜¯8å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…åŠ å¯†æ•°æ®
+ *	outï¼šåŠ å¯†åæ•°æ®
+ *	keyï¼šå¯†é’¥(4*AES_NKå­—èŠ‚)
+ *	ivï¼š 16å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	numï¼šè¦åŠ å¯†çš„å­—èŠ‚æ•°
+ */
 void yd_aes_cfb8_encrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t num)
 {
 	uint8_t i, iv_tmp1[16], iv_tmp2[16];
@@ -33,34 +29,34 @@ void yd_aes_cfb8_encrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, u
 	for(i=0; i<16; i++)
 	{
 		iv_tmp1[i] = iv[i];
-		iv_tmp2[i] = iv[i]; //±¸·İµÚÒ»´ÎÊäÈë¿é.
+		iv_tmp2[i] = iv[i]; //å¤‡ä»½ç¬¬ä¸€æ¬¡è¾“å…¥å—.
 	}
 	
 	for(j=0; j<num; j++)
 	{
 		yd_aes_encrypt(iv_tmp1, key);
-		out[j] = in[j] ^ iv_tmp1[0]; //×î¸ßÓĞĞ§Î».
+		out[j] = in[j] ^ iv_tmp1[0]; //æœ€é«˜æœ‰æ•ˆä½.
 		for(i=0; i<15; i++)
 		{
 			iv_tmp1[i] = iv_tmp2[i+1];
 		}
-		iv_tmp1[15] = out[j]; //×éºÏÃÜÎÄÊı¾İ£¬×÷ÎªÏÂ´ÎÊäÈë¿é.
+		iv_tmp1[15] = out[j]; //ç»„åˆå¯†æ–‡æ•°æ®ï¼Œä½œä¸ºä¸‹æ¬¡è¾“å…¥å—.
 		
 		for(i=0; i<16; i++)
 		{
-			iv_tmp2[i] = iv_tmp1[i]; //Ôİ´æ£¬ÓÃÓÚ×éºÏÏÂ´ÎÊäÈë¿é.
+			iv_tmp2[i] = iv_tmp1[i]; //æš‚å­˜ï¼Œç”¨äºç»„åˆä¸‹æ¬¡è¾“å…¥å—.
 		}
 	}
 }
 
 /*
-	CFB-8Î»Ä£Ê½£¬½âÃÜ(×¢£º°´×Ö½Ú½âÃÜ£¬²»ÓÃÊÇ8×Ö½ÚµÄ±¶Êı)
-	in£º ´ı½âÃÜÊı¾İ
-	out£º½âÃÜºóÊı¾İ
-	key£ºÃÜÔ¿(4*AES_NK×Ö½Ú)
-	iv£º 16×Ö½Ú³õÊ¼Ê¸Á¿
-	num£ºÒª½âÃÜµÄ×Ö½ÚÊı
-*/
+ *	CFB-8ä½æ¨¡å¼ï¼Œè§£å¯†(æ³¨ï¼šæŒ‰å­—èŠ‚è§£å¯†ï¼Œä¸ç”¨æ˜¯8å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…è§£å¯†æ•°æ®
+ *	outï¼šè§£å¯†åæ•°æ®
+ *	keyï¼šå¯†é’¥(4*AES_NKå­—èŠ‚)
+ *	ivï¼š 16å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	numï¼šè¦è§£å¯†çš„å­—èŠ‚æ•°
+ */
 void yd_aes_cfb8_decrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t num)
 {
 	uint8_t i, iv_tmp1[16], iv_tmp2[16];
@@ -69,34 +65,34 @@ void yd_aes_cfb8_decrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, u
 	for(i=0; i<16; i++)
 	{
 		iv_tmp1[i] = iv[i];
-		iv_tmp2[i] = iv[i]; //±¸·İµÚÒ»´ÎÊäÈë¿é.
+		iv_tmp2[i] = iv[i]; //å¤‡ä»½ç¬¬ä¸€æ¬¡è¾“å…¥å—.
 	}
 	
 	for(j=0; j<num; j++)
 	{
-		yd_aes_encrypt(iv_tmp1, key); //Ê¹ÓÃ¼ÓÃÜÄ£Ê½.
-		out[j] = in[j] ^ iv_tmp1[0]; //×î¸ßÓĞĞ§Î».
+		yd_aes_encrypt(iv_tmp1, key); //ä½¿ç”¨åŠ å¯†æ¨¡å¼.
+		out[j] = in[j] ^ iv_tmp1[0]; //æœ€é«˜æœ‰æ•ˆä½.
 		for(i=0; i<15; i++)
 		{
 			iv_tmp1[i] = iv_tmp2[i+1];
 		}
-		iv_tmp1[15] = in[j]; //×éºÏÒª½âÃÜÊı¾İ£¬×÷ÎªÏÂ´ÎÊäÈë¿é.
+		iv_tmp1[15] = in[j]; //ç»„åˆè¦è§£å¯†æ•°æ®ï¼Œä½œä¸ºä¸‹æ¬¡è¾“å…¥å—.
 		
 		for(i=0; i<16; i++)
 		{
-			iv_tmp2[i] = iv_tmp1[i]; //Ôİ´æ£¬ÓÃÓÚ×éºÏÏÂ´ÎÊäÈë¿é.
+			iv_tmp2[i] = iv_tmp1[i]; //æš‚å­˜ï¼Œç”¨äºç»„åˆä¸‹æ¬¡è¾“å…¥å—.
 		}
 	}
 }
 
 /*
-	CFB-128Î»Ä£Ê½£¬¼ÓÃÜ(×¢£º°´¿é¼ÓÃÜ£¬16×Ö½ÚµÄ±¶Êı)
-	in£º ´ı¼ÓÃÜÊı¾İ
-	out£º¼ÓÃÜºóÊı¾İ
-	key£ºÃÜÔ¿(4*AES_NK×Ö½Ú)
-	iv£º 16×Ö½Ú³õÊ¼Ê¸Á¿
-	blk£ºÒª¼ÓÃÜµÄ¿éÊı
-*/
+ *	CFB-128ä½æ¨¡å¼ï¼ŒåŠ å¯†(æ³¨ï¼šæŒ‰å—åŠ å¯†ï¼Œ16å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…åŠ å¯†æ•°æ®
+ *	outï¼šåŠ å¯†åæ•°æ®
+ *	keyï¼šå¯†é’¥(4*AES_NKå­—èŠ‚)
+ *	ivï¼š 16å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	blkï¼šè¦åŠ å¯†çš„å—æ•°
+ */
 void yd_aes_cfb128_encrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t blk)
 {
 	uint8_t i, iv_tmp[16];
@@ -111,8 +107,8 @@ void yd_aes_cfb128_encrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv,
 		yd_aes_encrypt(iv_tmp, key);
 		for(i=0; i<16; i++)
 		{
-			iv_tmp[i] ^= in[i]; //ºÍÃ÷ÎÄÒì»òºó£¬×öÏÂ´ÎÊäÈë¿é.
-			out[i] = iv_tmp[i]; //Í¬Ê±Ò²ÊÇ¼ÓÃÜÊä³öÊı¾İ.
+			iv_tmp[i] ^= in[i]; //å’Œæ˜æ–‡å¼‚æˆ–åï¼Œåšä¸‹æ¬¡è¾“å…¥å—.
+			out[i] = iv_tmp[i]; //åŒæ—¶ä¹Ÿæ˜¯åŠ å¯†è¾“å‡ºæ•°æ®.
 		}
 		
 		in += 16;
@@ -122,13 +118,13 @@ void yd_aes_cfb128_encrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv,
 }
 
 /*
-	CFB-128Î»Ä£Ê½£¬½âÃÜ(×¢£º°´¿é½âÃÜ£¬16×Ö½ÚµÄ±¶Êı)
-	in£º ´ı½âÃÜÊı¾İ
-	out£º½âÃÜºóÊı¾İ
-	key£ºÃÜÔ¿(4*AES_NK×Ö½Ú)
-	iv£º 16×Ö½Ú³õÊ¼Ê¸Á¿
-	blk£ºÒª½âÃÜµÄ¿éÊı
-*/
+ *	CFB-128ä½æ¨¡å¼ï¼Œè§£å¯†(æ³¨ï¼šæŒ‰å—è§£å¯†ï¼Œ16å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…è§£å¯†æ•°æ®
+ *	outï¼šè§£å¯†åæ•°æ®
+ *	keyï¼šå¯†é’¥(4*AES_NKå­—èŠ‚)
+ *	ivï¼š 16å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	blkï¼šè¦è§£å¯†çš„å—æ•°
+ */
 void yd_aes_cfb128_decrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t blk)
 {
 	uint8_t i, iv_tmp[16];
@@ -143,8 +139,8 @@ void yd_aes_cfb128_decrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv,
 		yd_aes_encrypt(iv_tmp, key);
 		for(i=0; i<16; i++)
 		{
-			out[i] = iv_tmp[i] ^ in[i]; //Òì»òºó£¬×÷Îª½âÃÜÊä³ö.
-			iv_tmp[i] = in[i]; //ÉÏ´ÎÒª½âÃÜÊı¾İ£¬×÷ÎªÏÂ´ÎÊäÈë¿é.
+			out[i] = iv_tmp[i] ^ in[i]; //å¼‚æˆ–åï¼Œä½œä¸ºè§£å¯†è¾“å‡º.
+			iv_tmp[i] = in[i]; //ä¸Šæ¬¡è¦è§£å¯†æ•°æ®ï¼Œä½œä¸ºä¸‹æ¬¡è¾“å…¥å—.
 		}
 		
 		in += 16;

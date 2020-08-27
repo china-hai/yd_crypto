@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	�ļ���yd_md5.h
-	���ߣ�wzh
-	���䣺wangzhihai_138@163.com
-	��飺MD5�㷨ʵ�֣�����ο���RFC 1321��
-	�汾��V1.0.01
-*/
-
-/*
-	2020-4-11����һ�η���.
+	文件：yd_md5.h
+	作者：wzh
+	邮箱：wangzhihai_138@163.com
+	简介：MD5算法实现，详情参考《RFC 1321》
+	版本：README.md定义
 */
 
 #ifndef YD_MD5_H

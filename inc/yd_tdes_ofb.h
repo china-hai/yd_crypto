@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_tdes_ofb.h
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºTDESËã·¨Ä£Ê½OFB(Output Feedback)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶ANSI X9.52-1998¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_tdes_ofb.h
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šTDESç®—æ³•æ¨¡å¼OFB(Output Feedback)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠANSI X9.52-1998ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #ifndef YD_TDES_OFB_H

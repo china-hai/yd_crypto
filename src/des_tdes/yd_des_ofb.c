@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_des_ofb.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºDESËã·¨Ä£Ê½OFB(Output Feedback)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶FIPS PUB 81¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_des_ofb.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šDESç®—æ³•æ¨¡å¼OFB(Output Feedback)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠFIPS PUB 81ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_des_ofb.h"
@@ -18,13 +14,13 @@
 
 
 /*
-	OFB-8Î»Ä£Ê½£¬¼Ó(½â)ÃÜ(×¢£º°´×Ö½Ú¼Ó(½â)ÃÜ£¬²»ÓÃÊÇ8×Ö½ÚµÄ±¶Êı)
-	in£º ´ı¼Ó(½â)ÃÜÊı¾İ
-	out£º½â(¼Ó)ÃÜºóÊı¾İ
-	key£º8×Ö½ÚÃÜÔ¿
-	iv£º 8×Ö½Ú³õÊ¼Ê¸Á¿
-	num£ºÒª¼Ó(½â)ÃÜµÄ×Ö½ÚÊı
-*/
+ *	OFB-8ä½æ¨¡å¼ï¼ŒåŠ (è§£)å¯†(æ³¨ï¼šæŒ‰å­—èŠ‚åŠ (è§£)å¯†ï¼Œä¸ç”¨æ˜¯8å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…åŠ (è§£)å¯†æ•°æ®
+ *	outï¼šè§£(åŠ )å¯†åæ•°æ®
+ *	keyï¼š8å­—èŠ‚å¯†é’¥
+ *	ivï¼š 8å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	numï¼šè¦åŠ (è§£)å¯†çš„å­—èŠ‚æ•°
+ */
 void yd_des_ofb8_enc_dec_crypto(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t num)
 {
 	uint8_t i, iv_tmp1[8], iv_tmp2[8];
@@ -33,35 +29,35 @@ void yd_des_ofb8_enc_dec_crypto(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t
 	for(i=0; i<8; i++)
 	{
 		iv_tmp1[i] = iv[i];
-		iv_tmp2[i] = iv[i]; //±¸·İµÚÒ»´ÎÊäÈë¿é.
+		iv_tmp2[i] = iv[i]; //å¤‡ä»½ç¬¬ä¸€æ¬¡è¾“å…¥å—.
 	}
 	
 	for(j=0; j<num; j++)
 	{
 		yd_des_crypto(iv_tmp1, key, DES_ENCRYPT);
-		out[j] = in[j] ^ iv_tmp1[0]; //×î¸ßÓĞĞ§Î».
+		out[j] = in[j] ^ iv_tmp1[0]; //æœ€é«˜æœ‰æ•ˆä½.
 		iv_tmp2[0] = iv_tmp1[0];
 		for(i=0; i<7; i++)
 		{
 			iv_tmp1[i] = iv_tmp2[i+1];
 		}
-		iv_tmp1[7] = iv_tmp2[0]; //×éºÏ¼ÓÃÜºóµÄÊı¾İ£¬×÷ÎªÏÂ´ÎÊäÈë¿é.
+		iv_tmp1[7] = iv_tmp2[0]; //ç»„åˆåŠ å¯†åçš„æ•°æ®ï¼Œä½œä¸ºä¸‹æ¬¡è¾“å…¥å—.
 		
 		for(i=0; i<8; i++)
 		{
-			iv_tmp2[i] = iv_tmp1[i]; //Ôİ´æ£¬ÓÃÓÚ×éºÏÏÂ´ÎÊäÈë¿é.
+			iv_tmp2[i] = iv_tmp1[i]; //æš‚å­˜ï¼Œç”¨äºç»„åˆä¸‹æ¬¡è¾“å…¥å—.
 		}
 	}
 }
 
 /*
-	OFB-64Î»Ä£Ê½£¬¼Ó(½â)ÃÜ(×¢£º°´¿é¼Ó(½â)ÃÜ£¬8×Ö½ÚµÄ±¶Êı)
-	in£º ´ı¼Ó(½â)ÃÜÊı¾İ
-	out£º½â(¼Ó)ÃÜºóÊı¾İ
-	key£º8×Ö½ÚÃÜÔ¿
-	iv£º 8×Ö½Ú³õÊ¼Ê¸Á¿
-	blk£ºÒª¼Ó(½â)ÃÜµÄ¿éÊı
-*/
+ *	OFB-64ä½æ¨¡å¼ï¼ŒåŠ (è§£)å¯†(æ³¨ï¼šæŒ‰å—åŠ (è§£)å¯†ï¼Œ8å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…åŠ (è§£)å¯†æ•°æ®
+ *	outï¼šè§£(åŠ )å¯†åæ•°æ®
+ *	keyï¼š8å­—èŠ‚å¯†é’¥
+ *	ivï¼š 8å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	blkï¼šè¦åŠ (è§£)å¯†çš„å—æ•°
+ */
 void yd_des_ofb64_enc_dec_crypto(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t blk)
 {
 	uint8_t i, iv_tmp[8];
@@ -73,10 +69,10 @@ void yd_des_ofb64_enc_dec_crypto(uint8_t *in, uint8_t *out, uint8_t *key, uint8_
 	
 	while(blk > 0)
 	{
-		yd_des_crypto(iv_tmp, key, DES_ENCRYPT); //¼ÓÃÜºó£¬ÔÙ×÷ÎªÏÂ´ÎÊäÈë.
+		yd_des_crypto(iv_tmp, key, DES_ENCRYPT); //åŠ å¯†åï¼Œå†ä½œä¸ºä¸‹æ¬¡è¾“å…¥.
 		for(i=0; i<8; i++)
 		{
-			out[i] = iv_tmp[i] ^ in[i]; //Òì»òºó£¬×÷Îª¼ÓÃÜÊä³ö.
+			out[i] = iv_tmp[i] ^ in[i]; //å¼‚æˆ–åï¼Œä½œä¸ºåŠ å¯†è¾“å‡º.
 		}
 		
 		in += 8;

@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_tdes_cfb.h
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºTDESËã·¨Ä£Ê½CFB(Cipher Feedback)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶ANSI X9.52-1998¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_tdes_cfb.h
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šTDESç®—æ³•æ¨¡å¼CFB(Cipher Feedback)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠANSI X9.52-1998ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #ifndef YD_TDES_CFB_H

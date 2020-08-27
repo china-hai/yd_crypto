@@ -2,23 +2,19 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_sm3.h
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºSM3Ëã·¨ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶SM3 GM/T 0004-2012¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-6-29£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_sm3.h
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šSM3ç®—æ³•å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠSM3 GM/T 0004-2012ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_sm3.h"
 
-static uint32_t sm3_message_length=0, sm3_message_length_tmp=0; //Òª¼ÆËãÏûÏ¢³¤¶È.
+static uint32_t sm3_message_length=0, sm3_message_length_tmp=0; //è¦è®¡ç®—æ¶ˆæ¯é•¿åº¦.
 
 
-/* Í³¼ÆÏûÏ¢³¤¶È */
+/* ç»Ÿè®¡æ¶ˆæ¯é•¿åº¦ */
 static bool count_sm3_message_length(uint8_t *message)
 {
 	uint32_t tmp;
@@ -27,7 +23,7 @@ static bool count_sm3_message_length(uint8_t *message)
 	while(message[tmp] != '\0')
 	{
 		tmp++;
-		/* ÏŞÖÆ£º×î´ó¼ÆËã(0xffffffff >> 3) = 536870911×Ö½Ú */
+		/* é™åˆ¶ï¼šæœ€å¤§è®¡ç®—(0xffffffff >> 3) = 536870911å­—èŠ‚ */
 		if(tmp > 536870911)
 		{
 			return false;
@@ -35,15 +31,15 @@ static bool count_sm3_message_length(uint8_t *message)
 	}
 	
 	sm3_message_length = tmp;
-	sm3_message_length_tmp = tmp; //ÏûÏ¢³¤¶È.
+	sm3_message_length_tmp = tmp; //æ¶ˆæ¯é•¿åº¦.
 	
 	return true;
 }
 
 /*
-	Êı¾İÌî³ä
-	false=Êı¾İÃ»ÓĞÌî³äÍê£»true=Êı¾İÌî³äÍê³É
-*/
+ *	æ•°æ®å¡«å……
+ *	false=æ•°æ®æ²¡æœ‰å¡«å……å®Œï¼›true=æ•°æ®å¡«å……å®Œæˆ
+ */
 static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 {
 	uint8_t i;
@@ -58,9 +54,9 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 		
 		sm3_message_length -= 64;
 	}
-	else //Ğ¡ÓÚ64×Ö½Ú.
+	else //å°äº64å­—èŠ‚.
 	{
-		if(sm3_message_length >= 56) //56-63×Ö½ÚÖ®¼ä£¬Ò»¸ö¿éÌî³ä²»Íê£¬»¹ĞèÒªÌî³ä1´Î.
+		if(sm3_message_length >= 56) //56-63å­—èŠ‚ä¹‹é—´ï¼Œä¸€ä¸ªå—å¡«å……ä¸å®Œï¼Œè¿˜éœ€è¦å¡«å……1æ¬¡.
 		{
 			for(i=0; i<sm3_message_length; i++)
 			{
@@ -74,14 +70,14 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 			
 			sm3_message_length = 0;
 		}
-		else //Ğ¡ÓÚµÈÓÚ56×Ö½Ú.
+		else //å°äºç­‰äº56å­—èŠ‚.
 		{
 			for(i=0; i<sm3_message_length; i++)
 			{
 				m_8bit[i] = message[i];
 			}
 			
-			/* ÏûÏ¢Ğ¡ÓÚ56×Ö½ÚÊ±»òÕßÏûÏ¢ÊÇ64µÄ±¶ÊıÊ±£¬¡®1¡¯Ã»ÓĞÌî³ä */
+			/* æ¶ˆæ¯å°äº56å­—èŠ‚æ—¶æˆ–è€…æ¶ˆæ¯æ˜¯64çš„å€æ•°æ—¶ï¼Œâ€˜1â€™æ²¡æœ‰å¡«å…… */
 			if(sm3_message_length != 0 || sm3_message_length_tmp % 64 == 0)
 			{
 				m_8bit[i++] = 0x80;
@@ -92,7 +88,7 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			while(i < 60) //×î´ó¼ÆËãÊı¾İ³¤¶ÈÏŞÖÆµ½32Î»£¬ËùÒÔ(l=L)µÄÕâ4×Ö½ÚÌî0.
+			while(i < 60) //æœ€å¤§è®¡ç®—æ•°æ®é•¿åº¦é™åˆ¶åˆ°32ä½ï¼Œæ‰€ä»¥(l=L)çš„è¿™4å­—èŠ‚å¡«0.
 			{
 				m_8bit[i++] = 0;
 			}
@@ -110,7 +106,7 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 	return false;
 }
 
-/* ÏûÏ¢À©Õ¹W */
+/* æ¶ˆæ¯æ‰©å±•W */
 static void prepare_w(uint8_t *m_8bit, uint32_t *w, uint32_t *wt)
 {
 	uint8_t j, j_tmp;
@@ -122,7 +118,7 @@ static void prepare_w(uint8_t *m_8bit, uint32_t *w, uint32_t *wt)
 		w[j] = m_8bit[j_tmp]<<24 |
 			   m_8bit[j_tmp+1]<<16 |
 			   m_8bit[j_tmp+2]<<8 |
-			   m_8bit[j_tmp+3]; //´ó¶Ë.
+			   m_8bit[j_tmp+3]; //å¤§ç«¯.
 	}
 	
 	while(j <= 67) //w16-67
@@ -130,21 +126,21 @@ static void prepare_w(uint8_t *m_8bit, uint32_t *w, uint32_t *wt)
 		x = w[j-16] ^ w[j-9];
 		tmp1 = w[j-3] << 15;
 		tmp2 = w[j-3] >> 17;
-		tmp = tmp1 | tmp2; //Ñ­»·×óÒÆ15Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å·¦ç§»15ä½.
 		x ^= tmp;
 		
-		/* P1ÖÃ»»º¯Êı */
+		/* P1ç½®æ¢å‡½æ•° */
 		tmp1 = x << 15;
 		tmp2 = x >> 17;
-		tmp = tmp1 | tmp2; //Ñ­»·×óÒÆ15Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å·¦ç§»15ä½.
 		tmp1 = x << 23;
 		tmp2 = x >> 9;
-		tmp ^= tmp1 | tmp2; //Ñ­»·×óÒÆ23Î».
+		tmp ^= tmp1 | tmp2; //å¾ªç¯å·¦ç§»23ä½.
 		x ^= tmp;
 		
 		tmp1 = w[j-13] << 7;
 		tmp2 = w[j-13] >> 25;
-		tmp = tmp1 | tmp2; //Ñ­»·×óÒÆ7Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å·¦ç§»7ä½.
 		x ^= tmp;
 		
 		w[j] = x ^ w[j-6];
@@ -157,7 +153,7 @@ static void prepare_w(uint8_t *m_8bit, uint32_t *w, uint32_t *wt)
 	}
 }
 
-/* ¼ÆËãÖµ */
+/* è®¡ç®—å€¼ */
 static void compute_sm3_value(uint32_t *w, uint32_t *wt, uint32_t *V)
 {
 	uint8_t j;
@@ -172,15 +168,15 @@ static void compute_sm3_value(uint32_t *w, uint32_t *wt, uint32_t *V)
 	e = V[4];
 	f = V[5];
 	g = V[6];
-	h = V[7]; //³õÊ¼ÏòÁ¿.
+	h = V[7]; //åˆå§‹å‘é‡.
 	
 	for(j=0; j<64; j++)
 	{
 		tmp1 = a << 12;
 		tmp2 = a >> 20;
-		tmp = tmp1 | tmp2; //Ñ­»·×óÒÆ12Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å·¦ç§»12ä½.
 		tmp += e;
-		/* T³£Á¿ */
+		/* Tå¸¸é‡ */
 		if(j < 16)
 		{
 			t = 0x79cc4519;
@@ -199,17 +195,17 @@ static void compute_sm3_value(uint32_t *w, uint32_t *wt, uint32_t *V)
 			tmp1 = t << (j-32);
 			tmp2 = t >> (64-j);
 		}
-		tmp += tmp1 | tmp2; //Ñ­»·×óÒÆjÎ».
+		tmp += tmp1 | tmp2; //å¾ªç¯å·¦ç§»jä½.
 		tmp1 = tmp << 7;
 		tmp2 = tmp >> 25;
-		ss1 = tmp1 | tmp2; //Ñ­»·×óÒÆ7Î».
+		ss1 = tmp1 | tmp2; //å¾ªç¯å·¦ç§»7ä½.
 		
 		tmp1 = a << 12;
 		tmp2 = a >> 20;
-		tmp = tmp1 | tmp2; //Ñ­»·×óÒÆ12Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å·¦ç§»12ä½.
 		ss2 = ss1 ^ tmp;
 		
-		/* FF,GG²¼¶ûº¯Êı */
+		/* FF,GGå¸ƒå°”å‡½æ•° */
 		if(j < 16)
 		{
 			tt1 = a ^ b ^c;
@@ -226,7 +222,7 @@ static void compute_sm3_value(uint32_t *w, uint32_t *wt, uint32_t *V)
 		d = c;
 		tmp1 = b << 9;
 		tmp2 = b >> 23;
-		c = tmp1 | tmp2; //Ñ­»·×óÒÆ9Î».
+		c = tmp1 | tmp2; //å¾ªç¯å·¦ç§»9ä½.
 		b = a;
 		a = tt1;
 		h = g;
@@ -234,12 +230,12 @@ static void compute_sm3_value(uint32_t *w, uint32_t *wt, uint32_t *V)
 		tmp2 = f >> 13;
 		g = tmp1 | tmp2;
 		f = e;
-		/* P0ÖÃ»»º¯Êı */
+		/* P0ç½®æ¢å‡½æ•° */
 		tmp1 = tt2 << 9;
-		tmp2 = tt2 >> 23; //Ñ­»·×óÒÆ9Î».
+		tmp2 = tt2 >> 23; //å¾ªç¯å·¦ç§»9ä½.
 		tmp = tmp1 | tmp2;
 		tmp1 = tt2 << 17;
-		tmp2 = tt2 >> 15; //Ñ­»·×óÒÆ17Î».
+		tmp2 = tt2 >> 15; //å¾ªç¯å·¦ç§»17ä½.
 		tmp ^= tmp1 | tmp2;
 		e = tt2 ^ tmp;
 	}
@@ -255,10 +251,10 @@ static void compute_sm3_value(uint32_t *w, uint32_t *wt, uint32_t *V)
 }
 
 /*
-	²úÉúSM3ÔÓ´ÕÖµ(ÃÜÂë)
-	message£º²ÎÓë¼ÆËãµÄÊı¾İ
-	sm3£º ¼ÆËãµÃµ½µÄÔÓ´ÕÖµ(256Î»)
-*/
+ *	äº§ç”ŸSM3æ‚å‡‘å€¼(å¯†ç )
+ *	messageï¼šå‚ä¸è®¡ç®—çš„æ•°æ®
+ *	sm3ï¼š è®¡ç®—å¾—åˆ°çš„æ‚å‡‘å€¼(256ä½)
+ */
 bool yd_sm3(uint8_t *message, uint32_t *sm3)
 {
 	uint8_t flag, m_8bit[64];
@@ -276,12 +272,12 @@ bool yd_sm3(uint8_t *message, uint32_t *sm3)
 	V[4] = 0xa96f30bc;
 	V[5] = 0x163138aa;
 	V[6] = 0xe38dee4d;
-	V[7] = 0xb0fb0e4e; //³õÊ¼ÏòÁ¿Öµ.
+	V[7] = 0xb0fb0e4e; //åˆå§‹å‘é‡å€¼.
 	
 	flag = 1;
 	while(flag == 1)
 	{
-		i = sm3_message_length_tmp - sm3_message_length; //¶¨Î»Òª¼ÆËãµÄÏûÏ¢.
+		i = sm3_message_length_tmp - sm3_message_length; //å®šä½è¦è®¡ç®—çš„æ¶ˆæ¯.
 		if(true == padding_bits(&message[i], m_8bit))
 		{
 			flag = 0;

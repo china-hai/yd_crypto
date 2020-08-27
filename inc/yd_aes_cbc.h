@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_aes_cbc.h
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºAESËã·¨Ä£Ê½CBC(Cipher Block Chaining)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶SP800-38A¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_aes_cbc.h
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šAESç®—æ³•æ¨¡å¼CBC(Cipher Block Chaining)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠSP800-38Aã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #ifndef YD_AES_CBC_H

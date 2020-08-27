@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_des_cbc.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºDESËã·¨Ä£Ê½CBC(Cipher Block Chaining)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶FIPS PUB 81¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_des_cbc.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šDESç®—æ³•æ¨¡å¼CBC(Cipher Block Chaining)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠFIPS PUB 81ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_des_cbc.h"
@@ -18,13 +14,13 @@
 
 
 /*
-	CBCÄ£Ê½£¬¼ÓÃÜ(×¢£º°´¿é¼ÓÃÜ£¬8×Ö½ÚµÄ±¶Êı)
-	in£º ´ı¼ÓÃÜÊı¾İ
-	out£º¼ÓÃÜºóÊı¾İ
-	key£º8×Ö½ÚÃÜÔ¿
-	iv£º 8×Ö½Ú³õÊ¼Ê¸Á¿
-	blk£ºÒª¼ÓÃÜµÄ¿éÊı
-*/
+ *	CBCæ¨¡å¼ï¼ŒåŠ å¯†(æ³¨ï¼šæŒ‰å—åŠ å¯†ï¼Œ8å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…åŠ å¯†æ•°æ®
+ *	outï¼šåŠ å¯†åæ•°æ®
+ *	keyï¼š8å­—èŠ‚å¯†é’¥
+ *	ivï¼š 8å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	blkï¼šè¦åŠ å¯†çš„å—æ•°
+ */
 void yd_des_cbc_encrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t blk)
 {
 	uint8_t i;
@@ -45,13 +41,13 @@ void yd_des_cbc_encrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, ui
 }
 
 /*
-	CBCÄ£Ê½£¬½âÃÜ(×¢£º°´¿é½âÃÜ£¬8×Ö½ÚµÄ±¶Êı)
-	in£º ´ı½âÃÜÊı¾İ
-	out£º½âÃÜºóÊı¾İ
-	key£º8×Ö½ÚÃÜÔ¿
-	iv£º 8×Ö½Ú³õÊ¼Ê¸Á¿
-	blk£ºÒª½âÃÜµÄ¿éÊı
-*/
+ *	CBCæ¨¡å¼ï¼Œè§£å¯†(æ³¨ï¼šæŒ‰å—è§£å¯†ï¼Œ8å­—èŠ‚çš„å€æ•°)
+ *	inï¼š å¾…è§£å¯†æ•°æ®
+ *	outï¼šè§£å¯†åæ•°æ®
+ *	keyï¼š8å­—èŠ‚å¯†é’¥
+ *	ivï¼š 8å­—èŠ‚åˆå§‹çŸ¢é‡
+ *	blkï¼šè¦è§£å¯†çš„å—æ•°
+ */
 void yd_des_cbc_decrypt(uint8_t *in, uint8_t *out, uint8_t *key, uint8_t *iv, uint32_t blk)
 {
 	uint8_t i;

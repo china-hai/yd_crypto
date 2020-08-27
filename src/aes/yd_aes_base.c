@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_aes_base.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºAESËã·¨ºËĞÄ£¬ÏêÇé²Î¿¼¡¶FIPS PUB 197¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_aes_base.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šAESç®—æ³•æ ¸å¿ƒï¼Œè¯¦æƒ…å‚è€ƒã€ŠFIPS PUB 197ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_aes_base.h"
@@ -56,19 +52,19 @@ static const uint8_t inv_s_table[256] =
 	0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d	
 };
 
-static uint8_t aes_key[(AES_NR+1)*16]; //±£´æÀ©Õ¹ÃÜÔ¿.
+static uint8_t aes_key[(AES_NR+1)*16]; //ä¿å­˜æ‰©å±•å¯†é’¥.
 
 
-/* ÓĞÏŞÓòGF(2^8±íÊ¾2µÄ8´Î·½), ³Ëx(x¶àÏîÊ½¾ÍÊÇ0x02) */
+/* æœ‰é™åŸŸGF(2^8è¡¨ç¤º2çš„8æ¬¡æ–¹), ä¹˜x(xå¤šé¡¹å¼å°±æ˜¯0x02) */
 static uint8_t gf02(uint8_t x02)
 {
 	uint8_t tmp;
 	
 	/*
-		x02´ú±íÊäÈëµÄ¶àÏîÊ½£¬x*b(x)µÄ½á¹ûÊÇx02 Ä£mod ¶àÏîÊ½{0x011b}=x^8 + x^4 + x^3 + x + 1
-	   	¿ÉÊ¹ÓÃ×óÒÆºÍÒì»ò0x1bÊµÏÖ£¬¸ßÎ»ÊÇ0(Ğ¡ÓÚ0x80)Ö±½Ó×óÒÆ1Î»£¬¸ßÎ»ÊÇ1(´óÓÚµÈÓÚ0x80)ÏÈ×óÒÆ
-		1Î»£¬È»ºóÔÙÒì»ò0x1b
-	*/
+	 *	x02ä»£è¡¨è¾“å…¥çš„å¤šé¡¹å¼ï¼Œx*b(x)çš„ç»“æœæ˜¯x02 æ¨¡mod å¤šé¡¹å¼{0x011b}=x^8 + x^4 + x^3 + x + 1
+	 * 	å¯ä½¿ç”¨å·¦ç§»å’Œå¼‚æˆ–0x1bå®ç°ï¼Œé«˜ä½æ˜¯0(å°äº0x80)ç›´æ¥å·¦ç§»1ä½ï¼Œé«˜ä½æ˜¯1(å¤§äºç­‰äº0x80)å…ˆå·¦ç§»
+	 *	1ä½ï¼Œç„¶åå†å¼‚æˆ–0x1b
+	 */
 	tmp = x02 << 1;
 	
 	if(x02 >= 0x80)
@@ -79,7 +75,7 @@ static uint8_t gf02(uint8_t x02)
 	return tmp;
 }
 
-/* Á½×éÊı¾İÒì»ò */
+/* ä¸¤ç»„æ•°æ®å¼‚æˆ– */
 static void xor_bytes(uint8_t *ret, uint8_t *tmp, uint8_t num)
 {
 	uint8_t i;
@@ -90,7 +86,7 @@ static void xor_bytes(uint8_t *ret, uint8_t *tmp, uint8_t num)
 	}	
 }
 
-/* 4×Ö½Ú×ª»» */
+/* 4å­—èŠ‚è½¬æ¢ */
 static void sub_word(uint8_t *word)
 {
 	uint8_t i, tmp;
@@ -102,7 +98,7 @@ static void sub_word(uint8_t *word)
 	}
 }
 
-/* ×óĞı×ªÒ»¸öÎ»ÖÃ */
+/* å·¦æ—‹è½¬ä¸€ä¸ªä½ç½® */
 static void rot_word(uint8_t *word)
 {
 	uint8_t tmp;
@@ -117,14 +113,14 @@ static void rot_word(uint8_t *word)
 static void key_expansion(uint8_t *key)
 {
 	uint8_t i, j;
-	uint8_t rcon[4] = {1, 0, 0, 0}; //xµÄ0´Î·½ÊÇ1.
+	uint8_t rcon[4] = {1, 0, 0, 0}; //xçš„0æ¬¡æ–¹æ˜¯1.
 	uint8_t *p;
 	
 	for(i=0; i<4*AES_NK; i++)
 	{
 		aes_key[i] = key[i];
 	}
-	p = &aes_key[4*AES_NK]; //Ç°16×Ö½Ú´æ´¢Ô­Ê¼ÃÜÔ¿£¬µÃµ½ÆäºóµØÖ·.
+	p = &aes_key[4*AES_NK]; //å‰16å­—èŠ‚å­˜å‚¨åŸå§‹å¯†é’¥ï¼Œå¾—åˆ°å…¶ååœ°å€.
 	
 	for(i=AES_NK; i<4*(AES_NR+1); i++)
 	{
@@ -135,12 +131,12 @@ static void key_expansion(uint8_t *key)
 		}
 		
 		p += 4;
-		if(i % AES_NK == 0) //ÕûÊı±¶.
+		if(i % AES_NK == 0) //æ•´æ•°å€.
 		{
 			rot_word(p);
 			sub_word(p);
 			xor_bytes(p, rcon, 4);
-			rcon[0] = gf02(rcon[0]); //ÓĞÏŞÓòx{02}µÄÖ¸ÊıÃİ.
+			rcon[0] = gf02(rcon[0]); //æœ‰é™åŸŸx{02}çš„æŒ‡æ•°å¹‚.
 		}
 		else if((AES_NK == 8) && (i % AES_NK == 4))
 		{
@@ -149,13 +145,13 @@ static void key_expansion(uint8_t *key)
 		else
 		{}
 			
-		xor_bytes(p, p-4*AES_NK, 4); //Óë16¸ö×Ö½ÚÖ®Ç°µÄÒì»ò.
+		xor_bytes(p, p-4*AES_NK, 4); //ä¸16ä¸ªå­—èŠ‚ä¹‹å‰çš„å¼‚æˆ–.
 			
 		p += 4;
 	}
 }
 
-/* 16×Ö½ÚÌæ»» */
+/* 16å­—èŠ‚æ›¿æ¢ */
 static void sub_bytes(uint8_t *state, uint8_t enc_dec)
 {
 	uint8_t i, tmp;
@@ -165,36 +161,36 @@ static void sub_bytes(uint8_t *state, uint8_t enc_dec)
 	{
 		s = s_table;
 	}
-	else //½âÃÜ.
+	else //è§£å¯†.
 	{
 		s = inv_s_table;
 	}
 	
-	for(i=0; i<16; i++) /* ×Ö½ÚÖÃ»» */
+	for(i=0; i<16; i++) //å­—èŠ‚ç½®æ¢.
 	{
 		tmp = state[i];
 		state[i] = s[tmp];
 	}
 }
 
-/* ĞĞÒÆÎ»±ä»» */
+/* è¡Œç§»ä½å˜æ¢ */
 static void shift_rows(uint8_t *state, uint8_t enc_dec)
 {
 	uint8_t tmp[3];
 	
-	/* µÚÒ»ÖÖËã·¨ÊµÏÖ£¬Éú³É´úÂë´ó¸ÅÊÇµÚ¶şÖÖµÄÒ»±¶£¬Ö´ĞĞËÙ¶È±ÈµÚ¶şÖÖ¿ì20%×óÓÒ */
+	/* ç¬¬ä¸€ç§ç®—æ³•å®ç°ï¼Œç”Ÿæˆä»£ç å¤§æ¦‚æ˜¯ç¬¬äºŒç§çš„ä¸€å€ï¼Œæ‰§è¡Œé€Ÿåº¦æ¯”ç¬¬äºŒç§å¿«20%å·¦å³ */
 	if(enc_dec == AES_ENCRYPT)
 	{
-		//µÚ0ĞĞ²»±ä.
+		//ç¬¬0è¡Œä¸å˜.
 		tmp[0] = state[1];
-		state[1] = state[5]; //µÚ1ĞĞÑ­»·×óÒÆ1´Î.
+		state[1] = state[5]; //ç¬¬1è¡Œå¾ªç¯å·¦ç§»1æ¬¡.
 		state[5] = state[9];
 		state[9] = state[13];
 		state[13] = tmp[0];
 		
 		tmp[0] = state[2];
 		tmp[1] = state[6];
-		state[2] = state[10]; //µÚ2ĞĞÑ­»·×óÒÆ2´Î.
+		state[2] = state[10]; //ç¬¬2è¡Œå¾ªç¯å·¦ç§»2æ¬¡.
 		state[6] = state[14];
 		state[10] = tmp[0];
 		state[14] = tmp[1];
@@ -202,23 +198,23 @@ static void shift_rows(uint8_t *state, uint8_t enc_dec)
 		tmp[0] = state[3];
 		tmp[1] = state[7];
 		tmp[2] = state[11];
-		state[3] = state[15]; //µÚ3ĞĞÑ­»·×óÒÆ3´Î.
+		state[3] = state[15]; //ç¬¬3è¡Œå¾ªç¯å·¦ç§»3æ¬¡.
 		state[7] = tmp[0];
 		state[11] = tmp[1];
 		state[15] = tmp[2];
 	}
-	else //½âÃÜ.
+	else //è§£å¯†.
 	{
-		//µÚ0ĞĞ²»±ä.
+		//ç¬¬0è¡Œä¸å˜.
 		tmp[0] = state[13];
-		state[13] = state[9]; //µÚ1ĞĞÑ­»·ÓÒÒÆ1´Î.
+		state[13] = state[9]; //ç¬¬1è¡Œå¾ªç¯å³ç§»1æ¬¡.
 		state[9] = state[5];
 		state[5] = state[1];
 		state[1] = tmp[0];
 		
 		tmp[0] = state[10];
 		tmp[1] = state[14];
-		state[14] = state[6]; //µÚ2ĞĞÑ­»·ÓÒÒÆ2´Î.
+		state[14] = state[6]; //ç¬¬2è¡Œå¾ªç¯å³ç§»2æ¬¡.
 		state[10] = state[2];
 		state[6] = tmp[1];
 		state[2] = tmp[0];
@@ -226,24 +222,24 @@ static void shift_rows(uint8_t *state, uint8_t enc_dec)
 		tmp[0] = state[7];
 		tmp[1] = state[11];
 		tmp[2] = state[15];
-		state[15] = state[3]; //µÚ3ĞĞÑ­»·ÓÒÒÆ3´Î.
+		state[15] = state[3]; //ç¬¬3è¡Œå¾ªç¯å³ç§»3æ¬¡.
 		state[11] = tmp[2];
 		state[7] = tmp[1];
 		state[3] = tmp[0];
 	}
 	
-	/* µÚ¶şÖÖËã·¨ÊµÏÖ(²Î¼ÓÍøÉÏ´úÂë) */
+	/* ç¬¬äºŒç§ç®—æ³•å®ç°(å‚åŠ ç½‘ä¸Šä»£ç ) */
 //	uint8_t row, column, tmp1, tmp2, tmprow[4];
 //	
 //	for(row=1; row<4; row++)
 //	{
-//		for(column=0; column<4; column++) /* È¡Ò»ĞĞ½øĞĞÒÆÎ» */
+//		for(column=0; column<4; column++) /* å–ä¸€è¡Œè¿›è¡Œç§»ä½ */
 //		{
 //			tmp1 = column*4 + row;
 //			tmprow[column] = state[tmp1];
 //		}
 //		
-//		for(column=0; column<4; column++) /* ÒÆÎ»Ò»ĞĞ */
+//		for(column=0; column<4; column++) /* ç§»ä½ä¸€è¡Œ */
 //		{
 //			if(enc_dec == AES_ENCRYPT)
 //			{
@@ -259,7 +255,7 @@ static void shift_rows(uint8_t *state, uint8_t enc_dec)
 //	}	
 }
 
-/* ÁĞ»ìºÏ */
+/* åˆ—æ··åˆ */
 static void mix_columns(uint8_t *state, uint8_t enc_dec)
 {
 	uint8_t i, tmp, column[4];
@@ -268,17 +264,17 @@ static void mix_columns(uint8_t *state, uint8_t enc_dec)
 	for(i=0; i<4; i++)
 	{
 		/*
-			GFÓĞÏŞÓò¼Ó·¨(Òì»òÔËËã)
-			b(x) = {03}x^3 + {01}x^2 + {01}x + {02} (AESËã·¨Ñ¡ÔñµÄ¹Ì¶¨4Ïî¶àÏîÊ½)
-			ËüµÄÄæ¶àÏîÊ½ = {0b}x^3 + {0d}x^2 + {09}x + {0e}
-			b(x) X(È¡Ä£³Ë) s(x)¿ÉÒÔĞ´³É¾ØÕó£¬¶àÏîÊ½±íÊ¾ÈçÏÂ
-			s'0 = 2s0 + 3s1 + s2 + s3 = 2s0 + 2s1 + s2 + s3 + s1 = 2(s0 + s1) + (s1 + s2 + s3)
-			s'1 = s0 + 2s1 + 3s2 + s3 = 2s1 + 2s2 + s0 + s3 + s2 = 2(s1 + s2) + (s0 + s2 + s3)
-			s'2 = s0 + s1 + 2s2 + 3s3 = 2s2 + 2s3 + s0 + s1 + s3 = 2(s2 + s3) + (s0 + s1 + s3)
-			s'3 = 3s0 + s1 + s2 + 2s3 = 2s3 + 2s0 + s1 + s2 + s0 = 2(s3 + s0) + (s0 + s1 + s2)
-		*/
+		 *	GFæœ‰é™åŸŸåŠ æ³•(å¼‚æˆ–è¿ç®—)
+		 *	b(x) = {03}x^3 + {01}x^2 + {01}x + {02} (AESç®—æ³•é€‰æ‹©çš„å›ºå®š4é¡¹å¤šé¡¹å¼)
+		 *	å®ƒçš„é€†å¤šé¡¹å¼ = {0b}x^3 + {0d}x^2 + {09}x + {0e}
+		 *	b(x) X(å–æ¨¡ä¹˜) s(x)å¯ä»¥å†™æˆçŸ©é˜µï¼Œå¤šé¡¹å¼è¡¨ç¤ºå¦‚ä¸‹
+		 *	s'0 = 2s0 + 3s1 + s2 + s3 = 2s0 + 2s1 + s2 + s3 + s1 = 2(s0 + s1) + (s1 + s2 + s3)
+		 *	s'1 = s0 + 2s1 + 3s2 + s3 = 2s1 + 2s2 + s0 + s3 + s2 = 2(s1 + s2) + (s0 + s2 + s3)
+		 *	s'2 = s0 + s1 + 2s2 + 3s3 = 2s2 + 2s3 + s0 + s1 + s3 = 2(s2 + s3) + (s0 + s1 + s3)
+		 *	s'3 = 3s0 + s1 + s2 + 2s3 = 2s3 + 2s0 + s1 + s2 + s0 = 2(s3 + s0) + (s0 + s1 + s2)
+		 */
 		
-		 /* ÎªÓÅ»¯Ö´ĞĞËÙ¶È(²Î¿¼ÍøÉÏ´úÂë)£¬Èç£ºs1+s2+s3¼ÓÈës0£¬È»ºóÔÙ¼Ós0£¬ÒòÎªs0Òì»òs0¾ÍÊÇ0 */
+		/* ä¸ºä¼˜åŒ–æ‰§è¡Œé€Ÿåº¦(å‚è€ƒç½‘ä¸Šä»£ç )ï¼Œå¦‚ï¼šs1+s2+s3åŠ å…¥s0ï¼Œç„¶åå†åŠ s0ï¼Œå› ä¸ºs0å¼‚æˆ–s0å°±æ˜¯0 */
 		tmp = state[0] ^ state[1] ^ state[2] ^ state[3];
 		
 		column[0] = tmp ^ state[0] ^ gf02(state[0] ^ state[1]);
@@ -286,22 +282,22 @@ static void mix_columns(uint8_t *state, uint8_t enc_dec)
 		column[2] = tmp ^ state[2] ^ gf02(state[2] ^ state[3]);
 		column[3] = tmp ^ state[3] ^ gf02(state[3] ^ state[0]);
 		
-		if(enc_dec == AES_DECRYPT) //½âÃÜ.
+		if(enc_dec == AES_DECRYPT) //è§£å¯†.
 		{
 			/*
-				b(x)µÄÄæ¶àÏîÊ½ = {0b}x^3 + {0d}x^2 + {09}x + {0e}
-				b(x)µÄÄæ X(È¡Ä£³Ë) s(x)¿ÉÒÔĞ´³É¾ØÕó£¬¶àÏîÊ½±íÊ¾ÈçÏÂ
-				s'0 = 14s0 + 11s1 + 13s2 + 9s3
-				s'1 = 9s0 + 14s1 + 11s2 + 13s3
-				s'2 = 13s0 + 9s1 + 14s2 + 11s3
-				s'3 = 11s0 + 13s1 + 9s2 + 14s3
-			*/
+			 *	b(x)çš„é€†å¤šé¡¹å¼ = {0b}x^3 + {0d}x^2 + {09}x + {0e}
+			 *	b(x)çš„é€† X(å–æ¨¡ä¹˜) s(x)å¯ä»¥å†™æˆçŸ©é˜µï¼Œå¤šé¡¹å¼è¡¨ç¤ºå¦‚ä¸‹
+			 *	s'0 = 14s0 + 11s1 + 13s2 + 9s3
+			 *	s'1 = 9s0 + 14s1 + 11s2 + 13s3
+			 *	s'2 = 13s0 + 9s1 + 14s2 + 11s3
+			 *	s'3 = 11s0 + 13s1 + 9s2 + 14s3
+			 */
 			
 			/*
-				ÎªÓÅ»¯Ö´ĞĞËÙ¶È(²Î¿¼ÍøÉÏ´úÂë)£¬Èçs'0 = 14s0 + 11s1 + 13s2 + 9s3
-				= 2(s0 + s1) + (s0 + s1 + s2 + s3) + s0 //¼ÓÃÜ²¿·ÖÊµÏÖ
-				+ 2[4(a0 + a2) + 4(a1 + a3)] + 4(a0 + a2)
-			*/
+			 *	ä¸ºä¼˜åŒ–æ‰§è¡Œé€Ÿåº¦(å‚è€ƒç½‘ä¸Šä»£ç )ï¼Œå¦‚s'0 = 14s0 + 11s1 + 13s2 + 9s3
+			 *	= 2(s0 + s1) + (s0 + s1 + s2 + s3) + s0 //åŠ å¯†éƒ¨åˆ†å®ç°
+			 *	+ 2[4(a0 + a2) + 4(a1 + a3)] + 4(a0 + a2)
+			 */
 			s02m4 = gf02(gf02(state[0] ^ state[2]));
 			s13m4 = gf02(gf02(state[1] ^ state[3]));
 			tmp = gf02(s02m4 ^ s13m4);
@@ -321,18 +317,18 @@ static void mix_columns(uint8_t *state, uint8_t enc_dec)
 	}
 }
 
-/* ÂÖÃÜÔ¿¼Ó±ä»» */
+/* è½®å¯†é’¥åŠ å˜æ¢ */
 static void add_round_key(uint8_t *state, uint8_t *key)
 {
 	xor_bytes(state, key, 16);
 }
 
-/* ¿é£¨16B£©¼ÓÃÜ */
+/* å—ï¼ˆ16Bï¼‰åŠ å¯† */
 void yd_aes_encrypt(uint8_t *state, uint8_t *key)
 {
 	uint8_t i;
 	
-	key_expansion(key); //À©Õ¹ÃÜÔ¿.
+	key_expansion(key); //æ‰©å±•å¯†é’¥.
 	
 	add_round_key(state, aes_key);
 	for(i=1; i<AES_NR; i++)
@@ -347,12 +343,12 @@ void yd_aes_encrypt(uint8_t *state, uint8_t *key)
 	add_round_key(state, &aes_key[AES_NR*16]);
 }
 
-/* ¿é£¨16B£©½âÃÜ */
+/* å—ï¼ˆ16Bï¼‰è§£å¯† */
 void yd_aes_decrypt(uint8_t *state, uint8_t *key)
 {
 	uint8_t i;
 	
-	key_expansion(key); //À©Õ¹ÃÜÔ¿.
+	key_expansion(key); //æ‰©å±•å¯†é’¥.
 	
 	add_round_key(state, &aes_key[AES_NR*16]);
 	for(i=AES_NR; i>1; i--)

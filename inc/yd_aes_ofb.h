@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_aes_ofb.h
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºAESËã·¨Ä£Ê½OFB(Output Feedback)ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶SP800-38A¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_aes_ofb.h
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šAESç®—æ³•æ¨¡å¼OFB(Output Feedback)å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠSP800-38Aã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #ifndef YD_AES_OFB_H

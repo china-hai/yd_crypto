@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	�ļ���yd_des_ecb.h
-	���ߣ�wzh
-	���䣺wangzhihai_138@163.com
-	��飺DES�㷨ģʽECB(Electronic Codebook)ʵ�֣�����ο���FIPS PUB 81��
-	�汾��V1.0.01
-*/
-
-/*
-	2020-4-11����һ�η���.
+	文件：yd_des_ecb.h
+	作者：wzh
+	邮箱：wangzhihai_138@163.com
+	简介：DES算法模式ECB(Electronic Codebook)实现，详情参考《FIPS PUB 81》
+	版本：README.md定义
 */
 
 #ifndef YD_DES_ECB_H

@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_aes_base.h
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºAESËã·¨ºËĞÄ£¬ÏêÇé²Î¿¼¡¶FIPS PUB 197¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_aes_base.h
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šAESç®—æ³•æ ¸å¿ƒï¼Œè¯¦æƒ…å‚è€ƒã€ŠFIPS PUB 197ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #ifndef YD_AES_BASE_H
@@ -26,12 +22,12 @@
 #define AES_ENCRYPT					0
 #define AES_DECRYPT					1
 
-#define AES_NK						4 //4¸ö×Ö(16×Ö½Ú).
-//#define AES_NK					6 //6¸ö×Ö(24×Ö½Ú).
-//#define AES_NK					8 //8¸ö×Ö(32×Ö½Ú).
+#define AES_NK						4 //4ä¸ªå­—(16å­—èŠ‚).
+//#define AES_NK					6 //6ä¸ªå­—(24å­—èŠ‚).
+//#define AES_NK					8 //8ä¸ªå­—(32å­—èŠ‚).
 
 #if AES_NK == 4
-	#define AES_NR					10 //ÔËËãÂÖÊı.
+	#define AES_NR					10 //è¿ç®—è½®æ•°.
 #elif AES_NK == 6
 	#define AES_NR					12
 #elif AES_NK == 8

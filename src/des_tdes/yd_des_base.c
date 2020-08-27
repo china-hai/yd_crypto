@@ -2,15 +2,11 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_des_base.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºDESËã·¨ºËĞÄ£¬ÏêÇé²Î¿¼¡¶FIPS PUB46-3¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_des_base.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šDESç®—æ³•æ ¸å¿ƒï¼Œè¯¦æƒ…å‚è€ƒã€ŠFIPS PUB46-3ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_des_base.h"
@@ -135,7 +131,7 @@ static const uint8_t p_table[32]=
 static uint8_t des_key[768]; //16*48.
 
 
-/* ×Ö½Ú×ª»»Î» */
+/* å­—èŠ‚è½¬æ¢ä½ */
 static void byte_to_bits(uint8_t *in, uint8_t *out)
 {
 	uint8_t i, j, tmp;
@@ -152,7 +148,7 @@ static void byte_to_bits(uint8_t *in, uint8_t *out)
 	}
 }
 
-/* Î»×ª»»×Ö½Ú */
+/* ä½è½¬æ¢å­—èŠ‚ */
 static void bits_to_byte(uint8_t *in, uint8_t *out)
 {
 	uint8_t i, tmp;
@@ -167,7 +163,7 @@ static void bits_to_byte(uint8_t *in, uint8_t *out)
 	}	
 }
 
-/* Òì»ò²Ù×÷ */
+/* å¼‚æˆ–æ“ä½œ */
 static void byte_xor(uint8_t *in1_out, uint8_t *in2, uint8_t num)
 {
 	uint8_t i;
@@ -178,7 +174,7 @@ static void byte_xor(uint8_t *in1_out, uint8_t *in2, uint8_t num)
 	}	
 }
 
-/* ½«ÊäÈëÊı¾İÓÃÒÑÖª±í½øĞĞÖÃ»» */
+/* å°†è¾“å…¥æ•°æ®ç”¨å·²çŸ¥è¡¨è¿›è¡Œç½®æ¢ */
 static void permutation(uint8_t *in, uint8_t *out, const uint8_t *table, uint8_t num)
 {
 	uint8_t i, tmp;
@@ -190,7 +186,7 @@ static void permutation(uint8_t *in, uint8_t *out, const uint8_t *table, uint8_t
 	}	
 }
 
-/* Ñ¡ÔñÖÃ»» */
+/* é€‰æ‹©ç½®æ¢ */
 static void select_permutation(uint8_t *in_out)
 {
 	uint8_t i, j, tmp;
@@ -199,33 +195,33 @@ static void select_permutation(uint8_t *in_out)
 	for(i=0; i<8; i++)
 	{
 		tmp = i * 6;
-		r = (in_out[tmp] << 1) + in_out[tmp+5]; //ĞĞ.
-		c = (in_out[tmp+1] << 3) + (in_out[tmp+2] << 2) + (in_out[tmp+3] << 1) + in_out[tmp+4]; //ÁĞ.
+		r = (in_out[tmp] << 1) + in_out[tmp+5]; //è¡Œ.
+		c = (in_out[tmp+1] << 3) + (in_out[tmp+2] << 2) + (in_out[tmp+3] << 1) + in_out[tmp+4]; //åˆ—.
 		tmp = (r << 4) + c; //r*16+c.
-		tmp = s_table[i][tmp]; //Ñ¡ÔñÖÃ»»£¬°Ñ6Î»ÊäÈë»»³É4Î»Êä³ö.
+		tmp = s_table[i][tmp]; //é€‰æ‹©ç½®æ¢ï¼ŒæŠŠ6ä½è¾“å…¥æ¢æˆ4ä½è¾“å‡º.
 		
 		j = i * 4;
-		in_out[j+0] = (tmp >> 3) & 0x01; //×ª»»³É1Î»ĞÎÊ½.
+		in_out[j+0] = (tmp >> 3) & 0x01; //è½¬æ¢æˆ1ä½å½¢å¼.
 		in_out[j+1] = (tmp >> 2) & 0x01;
 		in_out[j+2] = (tmp >> 1) & 0x01;
 		in_out[j+3] = tmp & 0x01;
 	}	
 }
 
-/* Éú³ÉÃ¿×ékey */
+/* ç”Ÿæˆæ¯ç»„key */
 static void key_proc(uint8_t *in, uint8_t *out)
 {
 	uint8_t i, left[2], right[2];
 	uint8_t num, left_right[56], tmp[64];
 	
-	byte_to_bits(in, tmp); //64Î»°´×Ö½Ú´æ´¢µ½tmp£¬·½±ãºóĞø¼ÆËã.
-	permutation(tmp, left_right, pc1_table, 56); //PC1ÖÃ»»£¬´æµ½k_tmp.
+	byte_to_bits(in, tmp); //64ä½æŒ‰å­—èŠ‚å­˜å‚¨åˆ°tmpï¼Œæ–¹ä¾¿åç»­è®¡ç®—.
+	permutation(tmp, left_right, pc1_table, 56); //PC1ç½®æ¢ï¼Œå­˜åˆ°k_tmp.
 	
 	for(num=0; num<16; num++)
 	{
-		if(num == 0 || num == 1 || num == 8 || num == 15) //Ñ­»·×óÒÆ1Î».
+		if(num == 0 || num == 1 || num == 8 || num == 15) //å¾ªç¯å·¦ç§»1ä½.
 		{
-			left[0] = left_right[0]; //×î×ó¶Ë.
+			left[0] = left_right[0]; //æœ€å·¦ç«¯.
 			right[0] = left_right[28];
 			for(i=0; i<27; i++)
 			{
@@ -235,9 +231,9 @@ static void key_proc(uint8_t *in, uint8_t *out)
 			left_right[27] = left[0];
 			left_right[55] = right[0];
 		}
-		else //Ñ­»·×óÒÆ2Î».
+		else //å¾ªç¯å·¦ç§»2ä½.
 		{
-			left[0] = left_right[0]; //×î×ó¶Ë.
+			left[0] = left_right[0]; //æœ€å·¦ç«¯.
 			left[1] = left_right[1];
 			right[0] = left_right[28];
 			right[1] = left_right[29];
@@ -252,43 +248,43 @@ static void key_proc(uint8_t *in, uint8_t *out)
 			left_right[55] = right[1];
 		}
 		
-		permutation(left_right, &out[num*48], pc2_table, 48); //PC2ÖÃ»»£¬Éú³É48×Ö½Úkey.
+		permutation(left_right, &out[num*48], pc2_table, 48); //PC2ç½®æ¢ï¼Œç”Ÿæˆ48å­—èŠ‚key.
 	}
 }
 
 /*
-	¼Ó½âÃÜËã·¨ºËĞÄ(Ó¦ÓÃ²ã²»Ó¦µ÷ÓÃ)
-	in_out£º 8×Ö½Ú¼Ó(½â)ÃÜÊı¾İ
-	key£º	 8×Ö½ÚÃÜÔ¿
-	enc_dec£º¼Ó(½â)ÃÜ±êÖ¾£¬ENCRYPT=¼ÓÃÜ¡¢DECRYPT=½âÃÜ
-*/
+ *	åŠ è§£å¯†ç®—æ³•æ ¸å¿ƒ(åº”ç”¨å±‚ä¸åº”è°ƒç”¨)
+ *	in_outï¼š 8å­—èŠ‚åŠ (è§£)å¯†æ•°æ®
+ *	keyï¼š	 8å­—èŠ‚å¯†é’¥
+ *	enc_decï¼šåŠ (è§£)å¯†æ ‡å¿—ï¼ŒENCRYPT=åŠ å¯†ã€DECRYPT=è§£å¯†
+ */
 void yd_des_crypto(uint8_t *in_out, uint8_t *key, uint8_t enc_dec)
 {
 	uint8_t i, j;
 	uint8_t t, tmp[64], left_right[64];
 	
-	key_proc(key, des_key); //Éú³Ékey.
+	key_proc(key, des_key); //ç”Ÿæˆkey.
 	
-	byte_to_bits(in_out, tmp); //64Î»°´×Ö½Ú´æ´¢µ½tmp£¬·½±ãºóĞø¼ÆËã.
-	permutation(tmp, left_right, ip_table, 64); //³õÊ¼ÖÃ»»£¬´æµ½left_right.
+	byte_to_bits(in_out, tmp); //64ä½æŒ‰å­—èŠ‚å­˜å‚¨åˆ°tmpï¼Œæ–¹ä¾¿åç»­è®¡ç®—.
+	permutation(tmp, left_right, ip_table, 64); //åˆå§‹ç½®æ¢ï¼Œå­˜åˆ°left_right.
 	
 	for(i=0; i<16; i++)
 	{
-		permutation(&left_right[32], tmp, e_table, 48); //ÓÒ°ë²¿½øĞĞEÖÃ»»£¬32Î»±ä48Î»£¬´æµ½tmp.
-		if(enc_dec == DES_ENCRYPT) //¼ÓÃÜ.
+		permutation(&left_right[32], tmp, e_table, 48); //å³åŠéƒ¨è¿›è¡ŒEç½®æ¢ï¼Œ32ä½å˜48ä½ï¼Œå­˜åˆ°tmp.
+		if(enc_dec == DES_ENCRYPT) //åŠ å¯†.
 		{
-			byte_xor(tmp, &des_key[i*48], 48); //EÖÃ»»ºóÓëKÒì»ò£¬´æµ½tmp.
+			byte_xor(tmp, &des_key[i*48], 48); //Eç½®æ¢åä¸Kå¼‚æˆ–ï¼Œå­˜åˆ°tmp.
 		}
-		else //½âÃÜ.
+		else //è§£å¯†.
 		{
-			byte_xor(tmp, &des_key[(15-i)*48], 48); //EÖÃ»»ºóÓëKÒì»ò£¬´æµ½tmp.
+			byte_xor(tmp, &des_key[(15-i)*48], 48); //Eç½®æ¢åä¸Kå¼‚æˆ–ï¼Œå­˜åˆ°tmp.
 		}
-		select_permutation(tmp); //Ñ¡ÔñÖÃ»»£¬48Î»±ä32Î»£¬´æµ½tmp×ó°ë²¿.
-		permutation(tmp, &tmp[32], p_table, 32); //PÖÃ»»£¬´æµ½tmpÓÒ°ë²¿.
-		byte_xor(left_right, &tmp[32], 32); //PÖÃ»»ºóÓë×ó°ë²¿Òì»ò.
-		if(i != 15) //×îºóÒ»ÂÖ²»½»»».
+		select_permutation(tmp); //é€‰æ‹©ç½®æ¢ï¼Œ48ä½å˜32ä½ï¼Œå­˜åˆ°tmpå·¦åŠéƒ¨.
+		permutation(tmp, &tmp[32], p_table, 32); //Pç½®æ¢ï¼Œå­˜åˆ°tmpå³åŠéƒ¨.
+		byte_xor(left_right, &tmp[32], 32); //Pç½®æ¢åä¸å·¦åŠéƒ¨å¼‚æˆ–.
+		if(i != 15) //æœ€åä¸€è½®ä¸äº¤æ¢.
 		{
-			for(j=0; j<32; j++) //×óÓÒ°ë²¿½»»»£¬Òì»òºó×öÓÒ°ë²¿£¬ÒÔÇ°ÓÒ°ë²¿×ö×ó°ë²¿.
+			for(j=0; j<32; j++) //å·¦å³åŠéƒ¨äº¤æ¢ï¼Œå¼‚æˆ–ååšå³åŠéƒ¨ï¼Œä»¥å‰å³åŠéƒ¨åšå·¦åŠéƒ¨.
 			{
 				t = left_right[j+32];
 				left_right[j+32] = left_right[j];
@@ -297,6 +293,6 @@ void yd_des_crypto(uint8_t *in_out, uint8_t *key, uint8_t enc_dec)
 		}
 	}
 	
-	permutation(left_right, tmp, inv_ip_table, 64); //PÄæÖÃ»».
-	bits_to_byte(tmp, in_out); //×ªÎª×Ö½ÚÊä³ö.
+	permutation(left_right, tmp, inv_ip_table, 64); //Pé€†ç½®æ¢.
+	bits_to_byte(tmp, in_out); //è½¬ä¸ºå­—èŠ‚è¾“å‡º.
 }

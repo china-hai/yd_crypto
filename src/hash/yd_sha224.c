@@ -2,23 +2,19 @@
 /* Apache License 2.0 */
 
 /*
-	ÎÄ¼ş£ºyd_sha224.c
-	×÷Õß£ºwzh
-	ÓÊÏä£ºwangzhihai_138@163.com
-	¼ò½é£ºSHA224Ëã·¨ÊµÏÖ£¬ÏêÇé²Î¿¼¡¶FIPS PUB 180-4¡·
-	°æ±¾£ºV1.0.01
-*/
-
-/*
-	2020-4-11£ºµÚÒ»´Î·¢²¼.
+	æ–‡ä»¶ï¼šyd_sha224.c
+	ä½œè€…ï¼šwzh
+	é‚®ç®±ï¼šwangzhihai_138@163.com
+	ç®€ä»‹ï¼šSHA224ç®—æ³•å®ç°ï¼Œè¯¦æƒ…å‚è€ƒã€ŠFIPS PUB 180-4ã€‹
+	ç‰ˆæœ¬ï¼šREADME.mdå®šä¹‰
 */
 
 #include "yd_sha224.h"
 
 
-static uint32_t hash_message_length=0, hash_message_length_tmp=0; //Òª¼ÆËãÏûÏ¢³¤¶È.
+static uint32_t hash_message_length=0, hash_message_length_tmp=0; //è¦è®¡ç®—æ¶ˆæ¯é•¿åº¦.
 static uint32_t k_table[64] =
-{	/* ÏÂÃæÊı¾İÓÉÇ°64¸öÖÊÊı¿ª3´Î·½µÄÇ°32Î»Ğ¡Êı²¿·Ö(×ª¶ş½øÖÆ£¬³Ë2È¡Õû)µÃµ½ */
+{	/* ä¸‹é¢æ•°æ®ç”±å‰64ä¸ªè´¨æ•°å¼€3æ¬¡æ–¹çš„å‰32ä½å°æ•°éƒ¨åˆ†(è½¬äºŒè¿›åˆ¶ï¼Œä¹˜2å–æ•´)å¾—åˆ° */
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 	0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
 	0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
@@ -30,7 +26,7 @@ static uint32_t k_table[64] =
 };
 
 
-/* Í³¼ÆÏûÏ¢³¤¶È */
+/* ç»Ÿè®¡æ¶ˆæ¯é•¿åº¦ */
 static bool count_hash_message_length(uint8_t *message)
 {
 	uint32_t tmp;
@@ -39,7 +35,7 @@ static bool count_hash_message_length(uint8_t *message)
 	while(message[tmp] != '\0')
 	{
 		tmp++;
-		/* ÏŞÖÆ£º×î´ó¼ÆËã(0xffffffff >> 3) = 536870911×Ö½Ú */
+		/* é™åˆ¶ï¼šæœ€å¤§è®¡ç®—(0xffffffff >> 3) = 536870911å­—èŠ‚ */
 		if(tmp > 536870911)
 		{
 			return false;
@@ -47,15 +43,15 @@ static bool count_hash_message_length(uint8_t *message)
 	}
 	
 	hash_message_length = tmp;
-	hash_message_length_tmp = tmp; //ÏûÏ¢³¤¶È.
+	hash_message_length_tmp = tmp; //æ¶ˆæ¯é•¿åº¦.
 	
 	return true;
 }
 
 /*
-	Êı¾İÌî³ä
-	false=Êı¾İÃ»ÓĞÌî³äÍê£»true=Êı¾İÌî³äÍê³É
-*/
+ *	æ•°æ®å¡«å……
+ *	false=æ•°æ®æ²¡æœ‰å¡«å……å®Œï¼›true=æ•°æ®å¡«å……å®Œæˆ
+ */
 static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 {
 	uint8_t i;
@@ -70,9 +66,9 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 		
 		hash_message_length -= 64;
 	}
-	else //Ğ¡ÓÚ64×Ö½Ú.
+	else //å°äº64å­—èŠ‚.
 	{
-		if(hash_message_length >= 56) //56-63×Ö½ÚÖ®¼ä£¬Ò»¸ö¿éÌî³ä²»Íê£¬»¹ĞèÒªÌî³ä1´Î.
+		if(hash_message_length >= 56) //56-63å­—èŠ‚ä¹‹é—´ï¼Œä¸€ä¸ªå—å¡«å……ä¸å®Œï¼Œè¿˜éœ€è¦å¡«å……1æ¬¡.
 		{
 			for(i=0; i<hash_message_length; i++)
 			{
@@ -86,14 +82,14 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 			
 			hash_message_length = 0;
 		}
-		else //Ğ¡ÓÚµÈÓÚ56×Ö½Ú.
+		else //å°äºç­‰äº56å­—èŠ‚.
 		{
 			for(i=0; i<hash_message_length; i++)
 			{
 				m_8bit[i] = message[i];
 			}
 			
-			/* ÏûÏ¢Ğ¡ÓÚ56×Ö½ÚÊ±»òÕßÏûÏ¢ÊÇ64µÄ±¶ÊıÊ±£¬¡®1¡¯Ã»ÓĞÌî³ä */
+			/* æ¶ˆæ¯å°äº56å­—èŠ‚æ—¶æˆ–è€…æ¶ˆæ¯æ˜¯64çš„å€æ•°æ—¶ï¼Œâ€˜1â€™æ²¡æœ‰å¡«å…… */
 			if(hash_message_length != 0 || hash_message_length_tmp % 64 == 0)
 			{
 				m_8bit[i++] = 0x80;
@@ -104,7 +100,7 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			while(i < 60) //×î´ó¼ÆËãÊı¾İ³¤¶ÈÏŞÖÆµ½32Î»£¬ËùÒÔ(l=L)µÄÕâ4×Ö½ÚÌî0.
+			while(i < 60) //æœ€å¤§è®¡ç®—æ•°æ®é•¿åº¦é™åˆ¶åˆ°32ä½ï¼Œæ‰€ä»¥(l=L)çš„è¿™4å­—èŠ‚å¡«0.
 			{
 				m_8bit[i++] = 0;
 			}
@@ -122,7 +118,7 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 	return false;
 }
 
-/* ×¼±¸Wt */
+/* å‡†å¤‡Wt */
 static void prepare_wt(uint8_t *m, uint32_t *w)
 {
 	uint8_t t, t_tmp;
@@ -131,34 +127,34 @@ static void prepare_wt(uint8_t *m, uint32_t *w)
 	for(t=0; t<16; t++)
 	{
 		t_tmp = t << 2; //t<<2=t*4.
-		w[t] = m[t_tmp]<<24 | m[t_tmp+1]<<16 | m[t_tmp+2]<<8 | m[t_tmp+3]; //´ó¶Ë.
+		w[t] = m[t_tmp]<<24 | m[t_tmp+1]<<16 | m[t_tmp+2]<<8 | m[t_tmp+3]; //å¤§ç«¯.
 	}
 	
 	while(t<64)
 	{
 		tmp1 = w[t-2] << 15;
 		tmp2 = w[t-2] >> 17;
-		tmp = tmp1 | tmp2; //Ñ­»·ÓÒÒÆ17Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å³ç§»17ä½.
 		
 		tmp1 = w[t-2] << 13;
 		tmp2 = w[t-2] >> 19;
-		tmp ^= tmp1 | tmp2; //Ñ­»·ÓÒÒÆ19Î».
+		tmp ^= tmp1 | tmp2; //å¾ªç¯å³ç§»19ä½.
 		
 		tmp1 = w[t-2] >> 10;
-		tmp ^= tmp1; //ÓÒÒÆ10Î».
+		tmp ^= tmp1; //å³ç§»10ä½.
 		
 		w[t] = tmp + w[t-7];
 		
 		tmp1 = w[t-15] << 25;
 		tmp2 = w[t-15] >> 7;
-		tmp = tmp1 | tmp2; //Ñ­»·ÓÒÒÆ7Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å³ç§»7ä½.
 		
 		tmp1 = w[t-15] << 14;
 		tmp2 = w[t-15] >> 18;
-		tmp ^= tmp1 | tmp2; //Ñ­»·ÓÒÒÆ18Î».
+		tmp ^= tmp1 | tmp2; //å¾ªç¯å³ç§»18ä½.
 		
 		tmp1 = w[t-15] >> 3;
-		tmp ^= tmp1; //ÓÒÒÆ3Î».
+		tmp ^= tmp1; //å³ç§»3ä½.
 		
 		w[t] += tmp;
 		
@@ -168,7 +164,7 @@ static void prepare_wt(uint8_t *m, uint32_t *w)
 	}
 }
 
-/* ¼ÆËãÖµ */
+/* è®¡ç®—å€¼ */
 static void compute_hash_value(uint32_t *wt, uint32_t *H)
 {
 	uint8_t t;
@@ -176,7 +172,7 @@ static void compute_hash_value(uint32_t *wt, uint32_t *H)
 	uint32_t T1, T2;
 	uint32_t tmp, tmp1, tmp2;
 	
-	/* 2²½------------------------------------------------------------ */
+	/* 2æ­¥------------------------------------------------------------ */
 	a = H[0];
 	b = H[1];
 	c = H[2];
@@ -186,22 +182,22 @@ static void compute_hash_value(uint32_t *wt, uint32_t *H)
 	g = H[6];
 	h = H[7];
 	
-	/* 3²½------------------------------------------------------------ */
+	/* 3æ­¥------------------------------------------------------------ */
 	for(t=0; t<64; t++)
 	{
 		T1 = h;
 		
 		tmp1 = e << 26;
 		tmp2 = e >> 6;
-		tmp = tmp1 | tmp2; //Ñ­»·ÓÒÒÆ6Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å³ç§»6ä½.
 		
 		tmp1 = e << 21;
 		tmp2 = e >> 11;
-		tmp ^= tmp1 | tmp2; //Ñ­»·ÓÒÒÆ11Î».
+		tmp ^= tmp1 | tmp2; //å¾ªç¯å³ç§»11ä½.
 		
 		tmp1 = e << 7;
 		tmp2 = e >> 25;
-		tmp ^= tmp1 | tmp2; //Ñ­»·ÓÒÒÆ25Î».
+		tmp ^= tmp1 | tmp2; //å¾ªç¯å³ç§»25ä½.
 		
 		T1 += tmp;
 		T1 += (e & f) ^ (~e & g);
@@ -210,15 +206,15 @@ static void compute_hash_value(uint32_t *wt, uint32_t *H)
 		
 		tmp1 = a << 30;
 		tmp2 = a >> 2;
-		tmp = tmp1 | tmp2; //Ñ­»·ÓÒÒÆ2Î».
+		tmp = tmp1 | tmp2; //å¾ªç¯å³ç§»2ä½.
 		
 		tmp1 = a << 19;
 		tmp2 = a >> 13;
-		tmp ^= tmp1 | tmp2; //Ñ­»·ÓÒÒÆ13Î».
+		tmp ^= tmp1 | tmp2; //å¾ªç¯å³ç§»13ä½.
 		
 		tmp1 = a << 10;
 		tmp2 = a >> 22;
-		tmp ^= tmp1 | tmp2; //Ñ­»·ÓÒÒÆ22Î».
+		tmp ^= tmp1 | tmp2; //å¾ªç¯å³ç§»22ä½.
 		
 		T2 = tmp;
 		T2 += (a & b) ^ (a & c) ^ (b & c);
@@ -233,7 +229,7 @@ static void compute_hash_value(uint32_t *wt, uint32_t *H)
 		a = T1 + T2;
 	}
 	
-	/* 4²½------------------------------------------------------------ */
+	/* 4æ­¥------------------------------------------------------------ */
 	H[0] += a;
 	H[1] += b;
 	H[2] += c;
@@ -245,10 +241,10 @@ static void compute_hash_value(uint32_t *wt, uint32_t *H)
 }
 
 /*
-	²úÉú°²È«É¢ÁĞÖµSHA224
-	message£º²ÎÓë¼ÆËãµÄÊı¾İ
-	sha224£º ¼ÆËãµÃµ½µÄÉ¢ÁĞÖµ(224Î»)
-*/
+ *	äº§ç”Ÿå®‰å…¨æ•£åˆ—å€¼SHA224
+ *	messageï¼šå‚ä¸è®¡ç®—çš„æ•°æ®
+ *	sha224ï¼š è®¡ç®—å¾—åˆ°çš„æ•£åˆ—å€¼(224ä½)
+ */
 bool yd_sha224(uint8_t *message, uint32_t *sha224)
 {
 	uint8_t flag, m_8bit[64];
@@ -271,17 +267,17 @@ bool yd_sha224(uint8_t *message, uint32_t *sha224)
 	flag = 1;
 	while(flag == 1)
 	{
-		/* 0²½------------------------------------------------------------ */
-		i = hash_message_length_tmp - hash_message_length; //¶¨Î»Òª¼ÆËãµÄÏûÏ¢.
+		/* 0æ­¥------------------------------------------------------------ */
+		i = hash_message_length_tmp - hash_message_length; //å®šä½è¦è®¡ç®—çš„æ¶ˆæ¯.
 		if(true == padding_bits(&message[i], m_8bit))
 		{
 			flag = 0;
 		}
 		
-		/* 1²½------------------------------------------------------------ */
+		/* 1æ­¥------------------------------------------------------------ */
 		prepare_wt(m_8bit, wt);
 		
-		/* 2-4²½------------------------------------------------------------ */
+		/* 2-4æ­¥------------------------------------------------------------ */
 		compute_hash_value(wt, H);
 	}
 	
