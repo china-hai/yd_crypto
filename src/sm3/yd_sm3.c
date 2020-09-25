@@ -11,56 +11,34 @@
 
 #include "yd_sm3.h"
 
-static uint32_t sm3_message_length=0, sm3_message_length_tmp=0; //要计算消息长度.
-
-
-/* 统计消息长度 */
-static bool count_sm3_message_length(uint8_t *message)
-{
-	uint32_t tmp;
-	
-	tmp = 0;
-	while(message[tmp] != '\0')
-	{
-		tmp++;
-		/* 限制：最大计算(0xffffffff >> 3) = 536870911字节 */
-		if(tmp > 536870911)
-		{
-			return false;
-		}
-	}
-	
-	sm3_message_length = tmp;
-	sm3_message_length_tmp = tmp; //消息长度.
-	
-	return true;
-}
 
 /*
  *	数据填充
- *	false=数据没有填充完；true=数据填充完成
+ *	返回值：false=数据没有填充完；true=数据填充完成
  */
-static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
+static bool padding_bits(uint8_t *msg,
+						 uint32_t msg_length,
+						 uint32_t *msg_length_remain,
+						 uint8_t *m_8bit)
 {
 	uint8_t i;
-	uint32_t tmp;
 	
-	if(sm3_message_length >= 64)
+	if(*msg_length_remain >= 64)
 	{
 		for(i=0; i<64; i++)
 		{
-			m_8bit[i] = message[i];
+			m_8bit[i] = msg[i];
 		}
 		
-		sm3_message_length -= 64;
+		*msg_length_remain -= 64;
 	}
 	else //小于64字节.
 	{
-		if(sm3_message_length >= 56) //56-63字节之间，一个块填充不完，还需要填充1次.
+		if(*msg_length_remain >= 56) //56-63字节之间，一个块填充不完，还需要填充1次.
 		{
-			for(i=0; i<sm3_message_length; i++)
+			for(i=0; i<*msg_length_remain; i++)
 			{
-				m_8bit[i] = message[i];
+				m_8bit[i] = msg[i];
 			}
 			m_8bit[i++] = 0x80;
 			while(i < 64)
@@ -68,17 +46,17 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			sm3_message_length = 0;
+			*msg_length_remain = 0;
 		}
 		else //小于等于56字节.
 		{
-			for(i=0; i<sm3_message_length; i++)
+			for(i=0; i<*msg_length_remain; i++)
 			{
-				m_8bit[i] = message[i];
+				m_8bit[i] = msg[i];
 			}
 			
 			/* 消息小于56字节时或者消息是64的倍数时，‘1’没有填充 */
-			if(sm3_message_length != 0 || sm3_message_length_tmp % 64 == 0)
+			if(*msg_length_remain != 0 || msg_length % 64 == 0)
 			{
 				m_8bit[i++] = 0x80;
 			}
@@ -93,11 +71,11 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			tmp = sm3_message_length_tmp * 8;
-			m_8bit[60] = tmp >> 24;
-			m_8bit[61] = tmp >> 16;
-			m_8bit[62] = tmp >> 8;
-			m_8bit[63] = tmp;
+			msg_length <<= 3; //乘8转为位长度.
+			m_8bit[60] = msg_length >> 24;
+			m_8bit[61] = msg_length >> 16;
+			m_8bit[62] = msg_length >> 8;
+			m_8bit[63] = msg_length;
 			
 			return true;
 		}
@@ -252,18 +230,22 @@ static void compute_sm3_value(uint32_t *w, uint32_t *wt, uint32_t *V)
 
 /*
  *	产生SM3杂凑值(密码)
- *	message：参与计算的数据
- *	sm3： 计算得到的杂凑值(256位)
+ *	msg：		参与计算的数据(字符串)
+ *	msg_length：参与计算的数据长度
+ *	sm3： 		计算得到的杂凑值(256位)
  */
-bool yd_sm3(uint8_t *message, uint32_t *sm3)
+bool yd_sm3(uint8_t *msg, uint32_t msg_length, uint32_t *sm3)
 {
 	uint8_t flag, m_8bit[64];
-	uint32_t i, w[68], wt[64], V[8];
+	uint32_t i, msg_length_remain;
+	uint32_t w[68], wt[64], V[8];
 	
-	if(false == count_sm3_message_length(message))
+	/* 限制：最大计算0xffffffff / 8 = 536870911字节 */
+	if(msg_length > 536870911)
 	{
 		return false;
 	}
+	msg_length_remain = msg_length;
 	
 	V[0] = 0x7380166f;
 	V[1] = 0x4914b2b9;
@@ -277,8 +259,11 @@ bool yd_sm3(uint8_t *message, uint32_t *sm3)
 	flag = 1;
 	while(flag == 1)
 	{
-		i = sm3_message_length_tmp - sm3_message_length; //定位要计算的消息.
-		if(true == padding_bits(&message[i], m_8bit))
+		i = msg_length - msg_length_remain; //定位要计算的消息.
+		if(true == padding_bits(&msg[i],
+								msg_length,
+								&msg_length_remain,
+								m_8bit))
 		{
 			flag = 0;
 		}

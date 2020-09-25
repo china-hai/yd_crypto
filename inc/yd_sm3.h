@@ -20,7 +20,7 @@
 #include <stdbool.h>
 
 
-bool yd_sm3(uint8_t *message, uint32_t *sm3);
+bool yd_sm3(uint8_t *msg, uint32_t msg_length, uint32_t *sm3);
 
 #ifdef __cplusplus
 }

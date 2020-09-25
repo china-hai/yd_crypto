@@ -12,7 +12,6 @@
 #include "yd_sha256.h"
 
 
-static uint32_t hash_message_length=0, hash_message_length_tmp=0; //要计算消息长度.
 static uint32_t k_table[64] =
 {	/* 下面数据由前64个质数开3次方的前32位小数部分(转二进制，乘2取整)得到 */
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -25,54 +24,33 @@ static uint32_t k_table[64] =
 	0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 };
 
-
-/* 统计消息长度 */
-static bool count_hash_message_length(uint8_t *message)
-{
-	uint32_t tmp;
-	
-	tmp = 0;
-	while(message[tmp] != '\0')
-	{
-		tmp++;
-		/* 限制：最大计算(0xffffffff >> 3) = 536870911字节 */
-		if(tmp > 536870911)
-		{
-			return false;
-		}
-	}
-	
-	hash_message_length = tmp;
-	hash_message_length_tmp = tmp; //消息长度.
-	
-	return true;
-}
-
 /*
  *	数据填充
- *	false=数据没有填充完；true=数据填充完成
+ *	返回值：false=数据没有填充完；true=数据填充完成
  */
-static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
+static bool padding_bits(uint8_t *msg,
+						 uint32_t msg_length,
+						 uint32_t *msg_length_remain,
+						 uint8_t *m_8bit)
 {
 	uint8_t i;
-	uint32_t tmp;
 	
-	if(hash_message_length >= 64)
+	if(*msg_length_remain >= 64)
 	{
 		for(i=0; i<64; i++)
 		{
-			m_8bit[i] = message[i];
+			m_8bit[i] = msg[i];
 		}
 		
-		hash_message_length -= 64;
+		*msg_length_remain -= 64;
 	}
 	else //小于64字节.
 	{
-		if(hash_message_length >= 56) //56-63字节之间，一个块填充不完，还需要填充1次.
+		if(*msg_length_remain >= 56) //56-63字节之间，一个块填充不完，还需要填充1次.
 		{
-			for(i=0; i<hash_message_length; i++)
+			for(i=0; i<*msg_length_remain; i++)
 			{
-				m_8bit[i] = message[i];
+				m_8bit[i] = msg[i];
 			}
 			m_8bit[i++] = 0x80;
 			while(i < 64)
@@ -80,17 +58,17 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			hash_message_length = 0;
+			*msg_length_remain = 0;
 		}
 		else //小于等于56字节.
 		{
-			for(i=0; i<hash_message_length; i++)
+			for(i=0; i<*msg_length_remain; i++)
 			{
-				m_8bit[i] = message[i];
+				m_8bit[i] = msg[i];
 			}
 			
 			/* 消息小于56字节时或者消息是64的倍数时，‘1’没有填充 */
-			if(hash_message_length != 0 || hash_message_length_tmp % 64 == 0)
+			if(*msg_length_remain != 0 || msg_length % 64 == 0)
 			{
 				m_8bit[i++] = 0x80;
 			}
@@ -105,11 +83,11 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			tmp = hash_message_length_tmp * 8;
-			m_8bit[60] = tmp >> 24;
-			m_8bit[61] = tmp >> 16;
-			m_8bit[62] = tmp >> 8;
-			m_8bit[63] = tmp;
+			msg_length <<= 3; //乘8转为位长度.
+			m_8bit[60] = msg_length >> 24;
+			m_8bit[61] = msg_length >> 16;
+			m_8bit[62] = msg_length >> 8;
+			m_8bit[63] = msg_length;
 			
 			return true;
 		}
@@ -242,18 +220,22 @@ static void compute_hash_value(uint32_t *wt, uint32_t *H)
 
 /*
  *	产生安全散列值SHA256
- *	message：参与计算的数据
- *	sha256： 计算得到的散列值(256位)
+ *	msg：		参与计算的数据
+ *	msg_length：参与计算的数据长度
+ *	sha256： 	计算得到的散列值(256位)
  */
-bool yd_sha256(uint8_t *message, uint32_t *sha256)
+bool yd_sha256(uint8_t *msg, uint32_t msg_length, uint32_t *sha256)
 {
 	uint8_t flag, m_8bit[64];
-	uint32_t i, wt[64], H[8];
+	uint32_t i, msg_length_remain;
+	uint32_t wt[64], H[8];
 	
-	if(false == count_hash_message_length(message))
+	/* 限制：最大计算0xffffffff / 8 = 536870911字节 */
+	if(msg_length > 536870911)
 	{
 		return false;
 	}
+	msg_length_remain = msg_length;
 	
 	H[0] = 0x6a09e667;
 	H[1] = 0xbb67ae85;
@@ -265,11 +247,14 @@ bool yd_sha256(uint8_t *message, uint32_t *sha256)
 	H[7] = 0x5be0cd19;
 	
 	flag = 1;
-	while(flag == 1)
+	do
 	{
 		/* 0步------------------------------------------------------------ */
-		i = hash_message_length_tmp - hash_message_length; //定位要计算的消息.
-		if(true == padding_bits(&message[i], m_8bit))
+		i = msg_length - msg_length_remain; //定位要计算的消息.
+		if(true == padding_bits(&msg[i],
+								msg_length,
+								&msg_length_remain,
+								m_8bit))
 		{
 			flag = 0;
 		}
@@ -279,7 +264,7 @@ bool yd_sha256(uint8_t *message, uint32_t *sha256)
 		
 		/* 2-4步------------------------------------------------------------ */
 		compute_hash_value(wt, H);
-	}
+	}while(flag == 1);
 	
 	sha256[0] = H[0];
 	sha256[1] = H[1];

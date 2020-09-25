@@ -20,7 +20,7 @@
 #include <stdbool.h>
 
 
-bool yd_sha1(uint8_t *message, uint32_t *sha1);
+bool yd_sha1(uint8_t *message, uint32_t msg_length, uint32_t *sha1);
 
 #ifdef __cplusplus
 }

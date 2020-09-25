@@ -12,7 +12,6 @@
 #include "yd_md5.h"
 
 
-static uint32_t md5_message_length=0, md5_message_length_tmp=0; //要计算消息长度.
 static uint32_t t_table[64] =
 {	/* 下面值由4294967296*abs(sin(i))得到，i=1~64，i是弧度，4294967296=0xffffffff+1 */
 	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -25,54 +24,34 @@ static uint32_t t_table[64] =
 	0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
 };
 
-
-/* 统计消息长度 */
-static bool count_hash_message_length(uint8_t *message)
-{
-	uint32_t tmp;
-	
-	tmp = 0;
-	while(message[tmp] != '\0')
-	{
-		tmp++;
-		/* 限制：最大计算(0xffffffff >> 3) = 536870911字节 */
-		if(tmp > 536870911)
-		{
-			return false;
-		}
-	}
-	
-	md5_message_length = tmp;
-	md5_message_length_tmp = tmp; //消息长度.
-	
-	return true;
-}
-
 /*
  *	数据填充
- *	false=数据没有填充完；true=数据填充完成
+ *	返回值：false=数据没有填充完；true=数据填充完成
  */
-static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
+static bool padding_bits(uint8_t *msg,
+						 uint32_t msg_length,
+						 uint32_t *msg_length_remain,
+						 uint8_t *m_8bit)
 {
 	uint8_t i;
-	uint32_t tmp;
 	
-	if(md5_message_length >= 64)
+	if(*msg_length_remain >= 64)
 	{
 		for(i=0; i<64; i++)
 		{
-			m_8bit[i] = message[i];
+			m_8bit[i] = msg[i];
 		}
 		
-		md5_message_length -= 64;
+		*msg_length_remain -= 64;
 	}
 	else //小于64字节.
 	{
-		if(md5_message_length >= 56) //56-63字节之间，一个块填充不完，还需要填充1次.
+		/* 56-63字节之间，一个块填充不完，还需要填充1次 */
+		if(*msg_length_remain >= 56)
 		{
-			for(i=0; i<md5_message_length; i++)
+			for(i=0; i<*msg_length_remain; i++)
 			{
-				m_8bit[i] = message[i];
+				m_8bit[i] = msg[i];
 			}
 			m_8bit[i++] = 0x80;
 			while(i < 64)
@@ -80,17 +59,17 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			md5_message_length = 0;
+			*msg_length_remain = 0;
 		}
 		else //小于等于56字节.
 		{
-			for(i=0; i<md5_message_length; i++)
+			for(i=0; i<*msg_length_remain; i++)
 			{
-				m_8bit[i] = message[i];
+				m_8bit[i] = msg[i];
 			}
 			
 			/* 消息小于56字节时或者消息是64的倍数时，‘1’没有填充 */
-			if(md5_message_length != 0 || md5_message_length_tmp % 64 == 0)
+			if(*msg_length_remain != 0 || msg_length % 64 == 0)
 			{
 				m_8bit[i++] = 0x80;
 			}
@@ -100,11 +79,11 @@ static bool padding_bits(uint8_t *message, uint8_t *m_8bit)
 				m_8bit[i++] = 0;
 			}
 			
-			tmp = md5_message_length_tmp * 8;
-			m_8bit[56] = tmp;
-			m_8bit[57] = tmp >> 8;
-			m_8bit[58] = tmp >> 16;
-			m_8bit[59] = tmp >> 24;
+			msg_length <<= 3; //乘8转为位长度.
+			m_8bit[56] = msg_length;
+			m_8bit[57] = msg_length >> 8;
+			m_8bit[58] = msg_length >> 16;
+			m_8bit[59] = msg_length >> 24;
 			
 			i = 60;
 			while(i < 64) //最大计算数据长度限制到32位，所以这4字节填0.
@@ -252,18 +231,23 @@ static void compute_md5_value(uint32_t *X, uint32_t *abcd)
 
 /*
  *	产生MD5
- *	message：参与计算的数据(字符串)
- *	md5：	 计算得到的值(128位)
+ *	msg：		参与计算的数据(字符串)
+ *	msg_length：参与计算的数据长度
+ *	md5：	 	计算得到的值(128位)
  */
-bool yd_md5(uint8_t *message, uint8_t *md5)
+bool yd_md5(uint8_t *msg, uint32_t msg_length, uint8_t *md5)
 {
-	uint8_t k, k_tmp, flag, m_8bit[64];
-	uint32_t i, X[16], abcd[4];
+	uint8_t k, k_tmp;
+	uint8_t flag, m_8bit[64];
+	uint32_t i, msg_length_remain;
+	uint32_t X[16], abcd[4];
 	
-	if(false == count_hash_message_length(message)) //字符串长度统计.
+	/* 限制：最大计算0xffffffff / 8 = 536870911字节 */
+	if(msg_length > 536870911)
 	{
 		return false;
 	}
+	msg_length_remain = msg_length;
 	
 	abcd[0] = 0x67452301; //初始化MD缓冲器.
 	abcd[1] = 0xefcdab89;
@@ -271,22 +255,28 @@ bool yd_md5(uint8_t *message, uint8_t *md5)
 	abcd[3] = 0x10325476;
 	
 	flag = 1;
-	while(flag == 1)
+	do
 	{
-		i = md5_message_length_tmp - md5_message_length; //定位要计算的消息.
-		if(true == padding_bits(&message[i], m_8bit))
+		i = msg_length - msg_length_remain; //定位要计算的消息.
+		if(true == padding_bits(&msg[i],
+								msg_length,
+								&msg_length_remain,
+								m_8bit))
 		{
 			flag = 0; //完成最后填充，结束循环.
 		}
 		
 		for(k=0; k<16; k++)
 		{
-			k_tmp = k << 2; //k<<2=k*4.
-			X[k] = m_8bit[k_tmp+3]<<24 | m_8bit[k_tmp+2]<<16 | m_8bit[k_tmp+1]<<8 | m_8bit[k_tmp];
+			k_tmp = k << 2; //k*4.
+			X[k] = m_8bit[k_tmp+3] << 24 |
+				   m_8bit[k_tmp+2] << 16 |
+				   m_8bit[k_tmp+1] << 8  |
+				   m_8bit[k_tmp];
 		}
 		
 		compute_md5_value(X, abcd);
-	}
+	}while(flag == 1);
 	
 	/* 显示转换 */
 	md5[0] = abcd[0];

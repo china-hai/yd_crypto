@@ -20,7 +20,7 @@
 #include <stdbool.h>
 
 
-bool yd_md5(uint8_t *message, uint8_t *md5);
+bool yd_md5(uint8_t *msg, uint32_t msg_length, uint8_t *md5);
 
 #ifdef __cplusplus
 }
